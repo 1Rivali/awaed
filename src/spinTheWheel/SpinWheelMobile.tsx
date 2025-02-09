@@ -28,7 +28,8 @@ import spinnerWhite from "../assets/spinner-variants/spinner-white.png";
 import TestsModal from "../components/modals/TestsModal";
 import ThemeModal from "../components/modals/ThemeModal";
 import WinModal from "../components/modals/WinModal";
-import loseImage from "../assets/spin-prizes/lost-the-turn.svg";
+import ssaImage from "../assets/spin-prizes/ssa-3.svg";
+import lsaImage from "../assets/spin-prizes/lsa.svg";
 import countIcon from "../assets/basics/count-icon.svg";
 import LoseModal from "../components/modals/LoseModal";
 import spinnerAudio from "../assets/audio/spin-232536.mp3";
@@ -41,45 +42,46 @@ import statisticsButton from "../assets/basics/statistics-button.svg";
 import StatsModal from "../components/modals/StatsModal";
 
 const SEGMENTS = [
-  { image: appleLogo, currentPrice: "900", stockName: "AAPL", maxWinners: 2 },
+  { image: appleLogo, currentPrice: "900", stockName: "AAPL", maxWinners: 1 },
   {
     image: googleLogo,
     currentPrice: "787.5",
     stockName: "GOOG",
-    maxWinners: 2,
+    maxWinners: 1,
   },
-  { image: nvidiaLogo, currentPrice: "450", stockName: "NVDA", maxWinners: 5 },
-  { image: sabicLogo, currentPrice: "68", stockName: "SABIC", maxWinners: 25 },
+  { image: nvidiaLogo, currentPrice: "450", stockName: "NVDA", maxWinners: 2 },
+  { image: sabicLogo, currentPrice: "20", stockName: "SABIC", maxWinners: 34 },
   {
-    image: loseImage,
-    currentPrice: "0",
-    stockName: "Lost",
-    maxWinners: 70,
+    // TODO:: SSA IMAGE AND VALUE
+    image: ssaImage,
+    currentPrice: "114.125",
+    stockName: "SSA",
+    maxWinners: 25,
   },
-  { image: stcLogo, currentPrice: "42", stockName: "STC", maxWinners: 125 },
+  { image: stcLogo, currentPrice: "84", stockName: "STC", maxWinners: 18 },
   {
     image: snapLogo,
-    currentPrice: "43.0",
+    currentPrice: "86.25",
     stockName: "SNAP",
-    maxWinners: 125,
+    maxWinners: 18,
   },
   {
     image: aramcoLogo,
-    currentPrice: "29",
+    currentPrice: "58",
     stockName: "ARAMCO",
-    maxWinners: 175,
+    maxWinners: 30,
   },
   {
     image: lucidLogo,
-    currentPrice: "10.875",
+    currentPrice: "21.75",
     stockName: "LCID",
-    maxWinners: 100,
+    maxWinners: 22,
   },
   {
-    image: loseImage,
-    currentPrice: "0",
-    stockName: "Lost",
-    maxWinners: 69,
+    image: lsaImage,
+    currentPrice: "107.875",
+    stockName: "LSA",
+    maxWinners: 2,
   },
 ];
 
@@ -228,7 +230,7 @@ const SpinWheel = () => {
   const [showGameOver, setShowGameOver] = useState(false);
 
   useEffect(() => {
-    if (currentSpinIndex === 698) {
+    if (currentSpinIndex === 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
       }, 7000); // 5 seconds delay
@@ -236,7 +238,7 @@ const SpinWheel = () => {
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
   }, [currentSpinIndex]);
-  if (currentSpinIndex === 698 && showGameOver) {
+  if (currentSpinIndex === 153 && showGameOver) {
     return (
       <motion.div
         initial={{
@@ -262,7 +264,7 @@ const SpinWheel = () => {
               <Heading color={"white"} fontSize={"8vw"}>
                 Total Spins:{" "}
                 <Text as={"span"} color={"#FFB800"}>
-                  698
+                  153
                 </Text>
               </Heading>
               <Image src={gameOverBackTmw} height={"8vw"}></Image>
@@ -350,11 +352,13 @@ const SpinWheel = () => {
                 <Image
                   src={seg.image}
                   filter={wheel === "black" ? "invert(0)" : "invert(1)"}
-                  w={i === 4 || i === 9 ? "22vw" : "18vw"}
-                  h={i === 4 || i === 9 ? "22vw" : "18vw"}
+                  w={i === 4 || i === 9 ? "24vw" : "18vw"}
+                  h={i === 4 || i === 9 ? "24vw" : "18vw"}
                   transform={
-                    i === 1 || i === 4
+                    i === 1
                       ? "rotate(180deg) translate(-5vw, 8vw)"
+                      : i === 4
+                      ? "rotate(180deg) translate(-3vw, 11vw)"
                       : i === 9
                       ? "rotate(180deg) translate(-5vw, 10vw)"
                       : i === 8
@@ -549,9 +553,9 @@ const SpinWheel = () => {
         <Text
           as={"span"}
           fontSize={"3vw"}
-          color={currentSpinIndex === 698 ? "red" : "white"}
+          color={currentSpinIndex === 153 ? "red" : "white"}
         >
-          {currentSpinIndex}/698
+          {currentSpinIndex}/153
         </Text>
       </Box>
     </Center>

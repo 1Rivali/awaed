@@ -228,7 +228,7 @@ const SpinWheel = () => {
   const [showGameOver, setShowGameOver] = useState(false);
 
   useEffect(() => {
-    if (currentSpinIndex === 698) {
+    if (currentSpinIndex === 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
       }, 5000); // 5 seconds delay
@@ -236,7 +236,7 @@ const SpinWheel = () => {
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
   }, [currentSpinIndex]);
-  if (currentSpinIndex === 698 && showGameOver) {
+  if (currentSpinIndex === 153 && showGameOver) {
     return (
       <motion.div
         initial={{
@@ -266,7 +266,7 @@ const SpinWheel = () => {
               <Heading color={"white"} fontSize={"8vh"}>
                 Total Spins:{" "}
                 <Text as={"span"} color={"#FFB800"}>
-                  698
+                  153
                 </Text>
               </Heading>
               <Image src={gameOverBackTmw} height={"8vh"}></Image>
@@ -546,9 +546,9 @@ const SpinWheel = () => {
         <Text
           as={"span"}
           fontSize={"3vh"}
-          color={currentSpinIndex === 698 ? "red" : "white"}
+          color={currentSpinIndex === 153 ? "red" : "white"}
         >
-          {currentSpinIndex}/698
+          {currentSpinIndex}/153
         </Text>
       </Box>
     </Center>

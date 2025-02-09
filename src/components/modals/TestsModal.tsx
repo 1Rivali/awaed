@@ -31,7 +31,7 @@ const TestsModal = ({ isOpen, onClose, segments }: ResultsModalProps) => {
   const [results, setResults] = useState<number[]>(
     new Array(segments.length).fill(0)
   );
-  const [numSpins, setNumSpins] = useState<number>(698); // Default to 698 spins
+  const [numSpins, setNumSpins] = useState<number>(153); // Default to 153 spins
 
   // Create the pool of indices based on maxWinners
   const createPool = () => {
@@ -99,7 +99,7 @@ const TestsModal = ({ isOpen, onClose, segments }: ResultsModalProps) => {
             </Center>
 
             <NumberInput
-              defaultValue={698}
+              defaultValue={153}
               min={1}
               max={100000}
               onChange={(valueString) => setNumSpins(Number(valueString))}
