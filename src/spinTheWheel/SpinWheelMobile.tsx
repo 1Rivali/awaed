@@ -92,7 +92,7 @@ const SpinWheel = () => {
   const [wheel, setWheel] = useState<string>("black");
   const [spinAudio] = useState(new Audio(spinnerAudio));
   const [toolBarVisible, setToolBarVisible] = useState(false);
-  const [currentSpinIndex, setCurrentSpinIndex] = useState(0);
+  const [currentSpinIndex, setCurrentSpinIndex] = useState(697);
   const [pool, setPool] = useState<number[]>([]);
 
   // Create the pool of indices based on maxWinners
@@ -159,7 +159,7 @@ const SpinWheel = () => {
   useEffect(() => {
     if (pool.length > 0) {
       const dataToSave = {
-        currentSpinIndex,
+        currentSpinIndex: 697,
         pool,
         timestamp: new Date().getTime(),
       };
@@ -260,7 +260,7 @@ const SpinWheel = () => {
           position={"relative"}
         >
           <Center>
-            <VStack height={"90vw"} justifyContent={"space-around"}>
+            <VStack mt={"20vh"} height={"60vh"} justifyContent={"space-around"}>
               <Image mt={"8vw"} src={gameOverComplete} height={"25vw"} />
               <Image src={gameOverSpinsOvr} height={"16vw"}></Image>
               <Heading color={"white"} fontSize={"8vw"}>
@@ -528,9 +528,16 @@ const SpinWheel = () => {
         pr={"5vw"}
         zIndex={50}
       >
-        <Image width={"30vw"} mb={"1vw"} src={awaedWritten} />
         <Image width={"50vw"} src={arzLogo} />
       </Box>
+      <Image
+        position={"absolute"}
+        top={"18vh"}
+        left={"11vh"}
+        width={"50vw"}
+        mb={"1vw"}
+        src={awaedWritten}
+      />
       {/* COUNT ICON */}
       <Box
         position={"absolute"}
