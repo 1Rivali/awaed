@@ -10,36 +10,35 @@ import {
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import themeIcon from "../assets/basics/theme-button.svg";
-import bgGreen from "../assets/bgs/mobile-bg-green.svg";
+import spinnerAudio from "../assets/audio/spin-232536.mp3";
+import countIcon from "../assets/basics/count-icon.svg";
 import awaedWritten from "../assets/basics/logo-written.svg";
-import testIcon from "../assets/basics/tests-button.svg";
 import arzLogo from "../assets/basics/powered-by-arz.svg";
+import statisticsButton from "../assets/basics/statistics-button.svg";
+import testIcon from "../assets/basics/tests-button.svg";
+import themeIcon from "../assets/basics/theme-button.svg";
+import gameOverBg from "../assets/bgs/game-over-bg.svg";
+import bgGreen from "../assets/bgs/mobile-bg-green.svg";
+import gameOverBackTmw from "../assets/game-over/back-tmw.svg";
+import gameOverComplete from "../assets/game-over/complete.svg";
+import gameOverSpinsOvr from "../assets/game-over/spins-ovr.svg";
+import gameOverThanks from "../assets/game-over/thanks.svg";
 import appleLogo from "../assets/spin-prizes/apple.svg";
 import aramcoLogo from "../assets/spin-prizes/aramco.svg";
 import googleLogo from "../assets/spin-prizes/google.svg";
+import lsaImage from "../assets/spin-prizes/lsa.svg";
 import lucidLogo from "../assets/spin-prizes/lucid.svg";
 import nvidiaLogo from "../assets/spin-prizes/nvidia.svg";
 import sabicLogo from "../assets/spin-prizes/sabic.svg";
 import snapLogo from "../assets/spin-prizes/snap.svg";
+import ssaImage from "../assets/spin-prizes/ssa-3.svg";
 import stcLogo from "../assets/spin-prizes/stc.svg";
 import spinnerBlack from "../assets/spinner-variants/spinner-black.png";
 import spinnerWhite from "../assets/spinner-variants/spinner-white.png";
+import StatsModal from "../components/modals/StatsModal";
 import TestsModal from "../components/modals/TestsModal";
 import ThemeModal from "../components/modals/ThemeModal";
 import WinModal from "../components/modals/WinModal";
-import ssaImage from "../assets/spin-prizes/ssa-3.svg";
-import lsaImage from "../assets/spin-prizes/lsa.svg";
-import countIcon from "../assets/basics/count-icon.svg";
-import LoseModal from "../components/modals/LoseModal";
-import spinnerAudio from "../assets/audio/spin-232536.mp3";
-import gameOverBg from "../assets/bgs/game-over-bg.svg";
-import gameOverComplete from "../assets/game-over/complete.svg";
-import gameOverSpinsOvr from "../assets/game-over/spins-ovr.svg";
-import gameOverBackTmw from "../assets/game-over/back-tmw.svg";
-import gameOverThanks from "../assets/game-over/thanks.svg";
-import statisticsButton from "../assets/basics/statistics-button.svg";
-import StatsModal from "../components/modals/StatsModal";
 
 const SEGMENTS = [
   { image: appleLogo, currentPrice: "900", stockName: "AAPL", maxWinners: 1 },
@@ -193,11 +192,8 @@ const SpinWheel = () => {
     setTimeout(() => {
       setIsSpinning(false);
       setWinningIdx(selectedIndex);
-      if (selectedIndex != 4 && selectedIndex != 9) {
-        onWinModalOpen();
-      } else {
-        onLoseModalOpen();
-      }
+      onWinModalOpen();
+
       spinAudio.load();
     }, 3700);
   };
@@ -207,11 +203,7 @@ const SpinWheel = () => {
     onOpen: onWinModalOpen,
     onClose: onWinModalClose,
   } = useDisclosure();
-  const {
-    isOpen: isLoseModalOpen,
-    onOpen: onLoseModalOpen,
-    onClose: onLoseModalClose,
-  } = useDisclosure();
+
   const {
     isOpen: isOpenTheme,
     onOpen: onOpenTheme,
@@ -440,9 +432,7 @@ const SpinWheel = () => {
           stockName={SEGMENTS[winningIdx].stockName}
         />
       )}
-      {winningIdx !== null && (
-        <LoseModal isOpen={isLoseModalOpen} onClose={onLoseModalClose} />
-      )}
+
       <ThemeModal
         isOpen={isOpenTheme}
         onClose={onCloseTheme}
