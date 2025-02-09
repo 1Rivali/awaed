@@ -532,8 +532,8 @@ const SpinWheel = () => {
       </Box>
       <Image
         position={"absolute"}
-        top={"18vh"}
-        left={"11vh"}
+        top={"16vh"}
+        left={"12vh"}
         width={"50vw"}
         mb={"1vw"}
         src={awaedWritten}
