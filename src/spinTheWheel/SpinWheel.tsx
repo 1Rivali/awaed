@@ -92,7 +92,7 @@ const SpinWheel = () => {
   const [wheel, setWheel] = useState<string>("black");
   const [spinAudio] = useState(new Audio(spinnerAudio));
   const [toolBarVisible, setToolBarVisible] = useState(false);
-  const [currentSpinIndex, setCurrentSpinIndex] = useState(698);
+  const [currentSpinIndex, setCurrentSpinIndex] = useState(0);
   const [pool, setPool] = useState<number[]>([]);
 
   // Create the pool of indices based on maxWinners
@@ -225,44 +225,81 @@ const SpinWheel = () => {
     onOpen: onStatsModalOpen,
     onClose: onStatsModalClose,
   } = useDisclosure();
+  const [showGameOver, setShowGameOver] = useState(false);
 
-  if (currentSpinIndex === 698) {
+  useEffect(() => {
+    if (currentSpinIndex === 698) {
+      const timer = setTimeout(() => {
+        setShowGameOver(true);
+      }, 5000); // 5 seconds delay
+
+      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }
+  }, [currentSpinIndex]);
+  if (currentSpinIndex === 698 && showGameOver) {
     return (
-      <Box
-        w={"100vw"}
-        height={"100vh"}
-        bg={`url(${gameOverBg})`}
-        bgSize={"cover"}
-        position={"relative"}
+      <motion.div
+        initial={{
+          opacity: 0.5,
+          y: 0,
+          background: `url(${bg})`,
+          backgroundSize: "cover",
+        }} // Initial state (hidden)
+        animate={{
+          opacity: 1,
+          y: 0,
+          background: `url(${gameOverBg})`,
+          backgroundSize: "cover",
+        }} // Animate to visible
+        transition={{ duration: 1, ease: "easeIn" }}
       >
-        <Center>
-          <VStack height={"90vh"} justifyContent={"space-around"}>
-            <Image mt={"8vh"} src={gameOverComplete} height={"25vh"} />
-            <Image src={gameOverSpinsOvr} height={"16vh"}></Image>
-            <Heading color={"white"} fontSize={"8vh"}>
-              Total Spins:{" "}
-              <Text as={"span"} color={"#FFB800"}>
-                698
-              </Text>
-            </Heading>
-            <Image src={gameOverBackTmw} height={"8vh"}></Image>
-            <Image src={gameOverThanks} height={"8vh"}></Image>
-          </VStack>
-        </Center>
         <Box
-          width={"100vw"}
-          position={"absolute"}
-          bottom={"0"}
-          left={"0"}
-          py={"3vh"}
-          pl={"5vh"}
-          pr={"5vh"}
-          zIndex={50}
+          w={"100vw"}
+          height={"100vh"}
+          bgSize={"cover"}
+          position={"relative"}
         >
-          <Image width={"30vh"} mb={"1vh"} src={awaedWritten} />
-          <Image width={"50vh"} src={arzLogo} />
+          <Center>
+            <VStack height={"90vh"} justifyContent={"space-around"}>
+              <Image mt={"8vh"} src={gameOverComplete} height={"25vh"} />
+              <Image src={gameOverSpinsOvr} height={"16vh"}></Image>
+              <Heading color={"white"} fontSize={"8vh"}>
+                Total Spins:{" "}
+                <Text as={"span"} color={"#FFB800"}>
+                  698
+                </Text>
+              </Heading>
+              <Image src={gameOverBackTmw} height={"8vh"}></Image>
+              <Image src={gameOverThanks} height={"8vh"}></Image>
+              <Text
+                as={"span"}
+                zIndex={"200"}
+                color={"red"}
+                cursor={"pointer"}
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.reload();
+                }}
+              >
+                Reset
+              </Text>
+            </VStack>
+          </Center>
+          <Box
+            width={"100vw"}
+            position={"absolute"}
+            bottom={"0"}
+            left={"0"}
+            py={"3vh"}
+            pl={"5vh"}
+            pr={"5vh"}
+            zIndex={50}
+          >
+            <Image width={"30vh"} mb={"1vh"} src={awaedWritten} />
+            <Image width={"50vh"} src={arzLogo} />
+          </Box>
         </Box>
-      </Box>
+      </motion.div>
     );
   }
 

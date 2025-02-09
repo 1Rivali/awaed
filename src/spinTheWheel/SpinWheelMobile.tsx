@@ -229,8 +229,8 @@ const SpinWheel = () => {
   if (currentSpinIndex === 698) {
     return (
       <Box
-        w={"100vh"}
-        height={"100vw"}
+        w={"100vw"}
+        height={"100vh"}
         bg={`url(${gameOverBg})`}
         bgSize={"cover"}
         position={"relative"}
@@ -268,7 +268,7 @@ const SpinWheel = () => {
 
   return (
     <Center
-      h="95vh"
+      h="100vh"
       bg="gray.900"
       backgroundImage={`url(${bg})`}
       bgSize={"cover"}
