@@ -5,7 +5,7 @@ import SpinWheel from "./spinTheWheel/SpinWheel";
 
 const App = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
-  return <Box>{!isMobile ? <SpinWheelMobile /> : <SpinWheel />}</Box>;
+  return <Box>{isMobile ? <SpinWheelMobile /> : <SpinWheel />}</Box>;
 };
 
 export default App;
