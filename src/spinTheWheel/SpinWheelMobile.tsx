@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import themeIcon from "../assets/basics/theme-button.svg";
-import bgGreen from "../assets/bgs/bg-green.svg";
+import bgGreen from "../assets/bgs/mobile-bg-green.svg";
 import awaedWritten from "../assets/basics/logo-written.svg";
 import testIcon from "../assets/basics/tests-button.svg";
 import arzLogo from "../assets/basics/powered-by-arz.svg";
