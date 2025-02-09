@@ -231,7 +231,7 @@ const SpinWheel = () => {
     if (currentSpinIndex === 698) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
-      }, 5000); // 5 seconds delay
+      }, 7000); // 5 seconds delay
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
@@ -240,18 +240,14 @@ const SpinWheel = () => {
     return (
       <motion.div
         initial={{
-          opacity: 0.5,
-          y: 0,
           background: `url(${bg})`,
           backgroundSize: "cover",
         }} // Initial state (hidden)
         animate={{
-          opacity: 1,
-          y: 0,
           background: `url(${gameOverBg})`,
           backgroundSize: "cover",
         }} // Animate to visible
-        transition={{ duration: 1, ease: "easeIn" }}
+        transition={{ duration: 4, ease: "easeIn" }}
       >
         <Box
           w={"100vw"}
@@ -533,7 +529,7 @@ const SpinWheel = () => {
       <Image
         position={"absolute"}
         top={"14vh"}
-        left={"13vh"}
+        left={"14vh"}
         width={"50vw"}
         mb={"1vw"}
         src={awaedWritten}
