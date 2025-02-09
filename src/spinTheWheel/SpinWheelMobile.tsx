@@ -92,7 +92,7 @@ const SpinWheel = () => {
   const [wheel, setWheel] = useState<string>("black");
   const [spinAudio] = useState(new Audio(spinnerAudio));
   const [toolBarVisible, setToolBarVisible] = useState(false);
-  const [currentSpinIndex, setCurrentSpinIndex] = useState(697);
+  const [currentSpinIndex, setCurrentSpinIndex] = useState(0);
   const [pool, setPool] = useState<number[]>([]);
 
   // Create the pool of indices based on maxWinners
@@ -159,7 +159,7 @@ const SpinWheel = () => {
   useEffect(() => {
     if (pool.length > 0) {
       const dataToSave = {
-        currentSpinIndex: 697,
+        currentSpinIndex,
         pool,
         timestamp: new Date().getTime(),
       };
