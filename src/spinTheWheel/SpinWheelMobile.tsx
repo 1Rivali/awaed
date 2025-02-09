@@ -92,7 +92,7 @@ const SpinWheel = () => {
   const [wheel, setWheel] = useState<string>("black");
   const [spinAudio] = useState(new Audio(spinnerAudio));
 
-  const [currentSpinIndex, setCurrentSpinIndex] = useState(698);
+  const [currentSpinIndex, setCurrentSpinIndex] = useState(0);
   const [pool, setPool] = useState<number[]>([]);
 
   // Create the pool of indices based on maxWinners
