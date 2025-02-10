@@ -428,9 +428,9 @@ const PlinkoBalls: React.FC = () => {
         onClick={dropBall}
         isDisabled={animating || currentSpinIndex >= 153}
         bg={`url(${dropBallIcon})`}
-        width={"20vw"} // Responsive button size
-        height={"20vw"} // Responsive button size
-        bgSize={"cover"}
+        width={"25vw"} // Responsive button size
+        height={"25vw"} // Responsive button size
+        bgSize={"contain"}
         bgRepeat={"no-repeat"}
         bgPos={"center"}
         _hover={{}}
