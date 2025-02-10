@@ -417,7 +417,15 @@ const PlinkoBalls: React.FC = () => {
             flex="1"
             m={1}
             bg={selectedPrize === index ? "green.300" : "white"}
-            width={"10vw"} // Scale images proportionally
+            width={
+              index === 2 ||
+              index === 3 ||
+              index === 4 ||
+              index === 5 ||
+              index === 7
+                ? "18vw"
+                : "10vw"
+            } // Scale images proportionally
           ></Image>
         ))}
       </Box>
