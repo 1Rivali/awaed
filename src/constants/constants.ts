@@ -17,6 +17,50 @@ export const SEGMENTS = [
     maxWinners: 1,
   },
   { image: nvidiaLogo, currentPrice: "450", stockName: "NVDA", maxWinners: 2 },
+  { image: sabicLogo, currentPrice: "68", stockName: "SABIC", maxWinners: 34 },
+  {
+    // TODO:: SSA IMAGE AND VALUE
+    image: ssaImage,
+    currentPrice: "114.125",
+    stockName: "SSA",
+    maxWinners: 25,
+  },
+  { image: stcLogo, currentPrice: "84", stockName: "STC", maxWinners: 18 },
+  {
+    image: snapLogo,
+    currentPrice: "86.25",
+    stockName: "SNAP",
+    maxWinners: 18,
+  },
+  {
+    image: aramcoLogo,
+    currentPrice: "58",
+    stockName: "ARAMCO",
+    maxWinners: 30,
+  },
+  {
+    image: lucidLogo,
+    currentPrice: "21.75",
+    stockName: "LCID",
+    maxWinners: 22,
+  },
+  {
+    image: lsaImage,
+    currentPrice: "107.875",
+    stockName: "LSA",
+    maxWinners: 2,
+  },
+];
+
+export const PlinkoSegments = [
+  { image: appleLogo, currentPrice: "900", stockName: "AAPL", maxWinners: 1 },
+  {
+    image: googleLogo,
+    currentPrice: "787.5",
+    stockName: "GOOG",
+    maxWinners: 1,
+  },
+  { image: nvidiaLogo, currentPrice: "450", stockName: "NVDA", maxWinners: 2 },
   { image: sabicLogo, currentPrice: "20", stockName: "SABIC", maxWinners: 34 },
   {
     // TODO:: SSA IMAGE AND VALUE
