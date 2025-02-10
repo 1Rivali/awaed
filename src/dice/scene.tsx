@@ -1,73 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
+import { SEGMENTS } from "../constants/constants";
 
 // ============================================================
 // 1. SEGMENTS & PRIZE POOL LOGIC
 // ------------------------------------------------------------
 // (Replace the image strings below with your actual imports.)
-const SEGMENTS = [
-  {
-    image: "appleLogo.png",
-    currentPrice: "900",
-    stockName: "AAPL",
-    maxWinners: 2,
-  },
-  {
-    image: "googleLogo.png",
-    currentPrice: "787.5",
-    stockName: "GOOG",
-    maxWinners: 2,
-  },
-  {
-    image: "nvidiaLogo.png",
-    currentPrice: "450",
-    stockName: "NVDA",
-    maxWinners: 5,
-  },
-  {
-    image: "sabicLogo.png",
-    currentPrice: "68",
-    stockName: "SABIC",
-    maxWinners: 25,
-  },
-  {
-    image: "loseImage.png",
-    currentPrice: "0",
-    stockName: "Lost",
-    maxWinners: 70,
-  },
-  {
-    image: "stcLogo.png",
-    currentPrice: "42",
-    stockName: "STC",
-    maxWinners: 125,
-  },
-  {
-    image: "snapLogo.png",
-    currentPrice: "43.0",
-    stockName: "SNAP",
-    maxWinners: 125,
-  },
-  {
-    image: "aramcoLogo.png",
-    currentPrice: "29",
-    stockName: "ARAMCO",
-    maxWinners: 175,
-  },
-  {
-    image: "lucidLogo.png",
-    currentPrice: "10.875",
-    stockName: "LCID",
-    maxWinners: 100,
-  },
-  {
-    image: "loseImage.png",
-    currentPrice: "0",
-    stockName: "Lost",
-    maxWinners: 69,
-  },
-];
 
 // These states and helper are used to select a winning segment.
 const createPool = () => {
