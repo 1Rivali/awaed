@@ -428,9 +428,9 @@ const PlinkoBalls: React.FC = () => {
         onClick={dropBall}
         isDisabled={animating || currentSpinIndex >= 153}
         bg={`url(${dropBallIcon})`}
-        width={"10vw"} // Responsive button size
-        height={"10vw"} // Responsive button size
-        bgSize={"contain"}
+        width={"25vh"} // Responsive button size
+        height={"25vh"} // Responsive button size
+        bgSize={"cover"}
         bgRepeat={"no-repeat"}
         bgPos={"center"}
         _hover={{}}
@@ -438,13 +438,13 @@ const PlinkoBalls: React.FC = () => {
       ></Button>
 
       {/* Prize Announcement */}
-      {selectedPrize !== null && (
+      {/* {selectedPrize !== null && (
         <Box mt={2}>
           <Text fontSize="xl">
             You won: {PlinkoSegments[selectedPrize].stockName}
           </Text>
         </Box>
-      )}
+      )} */}
 
       {/* Responsive Toolbar and Stats */}
       <Box
@@ -469,8 +469,8 @@ const PlinkoBalls: React.FC = () => {
 
       <Image
         position={"absolute"}
-        top={"18vw"} // Adjust the position based on viewport size
-        width={"20vw"} // Scalable width
+        top={"22vw"} // Adjust the position based on viewport size
+        width={"25vw"} // Scalable width
         mb={"1vw"}
         src={awaedWritten}
       />
