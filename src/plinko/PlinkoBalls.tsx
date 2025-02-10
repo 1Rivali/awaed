@@ -538,7 +538,7 @@ const PlinkoBalls: React.FC = () => {
         pl={"3vw"}
         zIndex={50}
       >
-        <Image width={"30vw"} src={arzLogo} />
+        <Image width={"34vw"} src={arzLogo} />
       </Box>
     </Center>
   );
