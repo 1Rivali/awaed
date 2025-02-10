@@ -428,8 +428,8 @@ const PlinkoBalls: React.FC = () => {
         onClick={dropBall}
         isDisabled={animating || currentSpinIndex >= 153}
         bg={`url(${dropBallIcon})`}
-        width={"25vh"} // Responsive button size
-        height={"25vh"} // Responsive button size
+        width={"20vw"} // Responsive button size
+        height={"20vw"} // Responsive button size
         bgSize={"cover"}
         bgRepeat={"no-repeat"}
         bgPos={"center"}
@@ -469,8 +469,8 @@ const PlinkoBalls: React.FC = () => {
 
       <Image
         position={"absolute"}
-        top={"22vw"} // Adjust the position based on viewport size
-        width={"25vw"} // Scalable width
+        top={"20vw"} // Adjust the position based on viewport size
+        width={"22vw"} // Scalable width
         mb={"1vw"}
         src={awaedWritten}
       />
@@ -538,7 +538,7 @@ const PlinkoBalls: React.FC = () => {
         pl={"3vw"}
         zIndex={50}
       >
-        <Image width={"40vw"} src={arzLogo} />
+        <Image width={"30vw"} src={arzLogo} />
       </Box>
     </Center>
   );
