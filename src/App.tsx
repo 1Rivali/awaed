@@ -1,8 +1,8 @@
 import { Box } from "@chakra-ui/react";
 
-import DiceScene from "./dice/scene";
 import { Route, Routes } from "react-router";
 import SpinWheelMobile from "./spinTheWheel/SpinWheelMobile";
+import PlinkoBalls from "./plinko/PlinkoBalls";
 
 const App = () => {
   return (
@@ -10,7 +10,7 @@ const App = () => {
       {" "}
       <Routes>
         <Route path="/" element={<SpinWheelMobile />} />
-        <Route path="/plinko" element={<DiceScene />} />
+        <Route path="/plinko" element={<PlinkoBalls />} />
       </Routes>
     </Box>
   );

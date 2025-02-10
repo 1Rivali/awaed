@@ -1,22 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Image,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
-import { SEGMENTS } from "../constants/constants";
+import React, { useEffect, useState } from "react";
+import collideSound from "../assets/audio/plinko-1.mp3";
+import countIcon from "../assets/basics/count-icon.svg";
+import awaedWritten from "../assets/basics/logo-written.svg";
+import ballIcon from "../assets/basics/plink-ball.svg";
+import statisticsButton from "../assets/basics/statistics-button.svg";
+import testIcon from "../assets/basics/tests-button.svg";
+import plinkoBg from "../assets/bgs/plinko-bg.svg";
+import { PlinkoSegments } from "../constants/constants";
 
+import arzLogo from "../assets/basics/powered-by-arz.svg";
+import GameOver from "../components/GameOver";
+import StatsModal from "../components/modals/StatsModal";
+import TestsModal from "../components/modals/TestsModal";
+import WinModal from "../components/modals/WinModal";
 interface Position {
   x: number;
   y: number;
 }
 
 // Board dimensions and peg rows.
-const BOARD_WIDTH = 300;
-const BOARD_HEIGHT = 500;
+const BOARD_WIDTH = window.innerWidth - 800;
+const BOARD_HEIGHT = window.innerHeight - 100;
 // With 9 rows, there will be 9 + 1 = 10 bins.
 const BOARD_ROWS = 9;
 
 // Dimensions for the ball and peg.
-const ballRadius = 10; // Ball diameter = 20px.
-const pegRadius = 4; // Peg diameter = 8px.
+const ballRadius = 20; // Ball diameter = 20px.
+const pegRadius = 15; // Peg diameter = 8px.
 const margin = 2;
 const collisionOffset = ballRadius + pegRadius + margin; // e.g. 10 + 4 + 2 = 16px
 
@@ -75,7 +94,7 @@ const realisticHorizontalTransition = {
   duration: 0.2,
 };
 
-const PlinkoBoard: React.FC = () => {
+const PlinkoBalls: React.FC = () => {
   const [pegRows, setPegRows] = useState<Position[][]>([]);
   const [animating, setAnimating] = useState(false);
   const [selectedPrize, setSelectedPrize] = useState<number | null>(null);
@@ -88,7 +107,7 @@ const PlinkoBoard: React.FC = () => {
   }, []);
   const createPool = () => {
     const pool: number[] = [];
-    SEGMENTS.forEach((segment, index) => {
+    PlinkoSegments.forEach((segment, index) => {
       for (let i = 0; i < segment.maxWinners; i++) {
         pool.push(index);
       }
@@ -147,7 +166,7 @@ const PlinkoBoard: React.FC = () => {
   useEffect(() => {
     if (pool.length > 0) {
       const dataToSave = {
-        currentSpinIndex,
+        currentSpinIndex: 152,
         pool,
         timestamp: new Date().getTime(),
       };
@@ -163,6 +182,7 @@ const PlinkoBoard: React.FC = () => {
     if (animating) return;
     setAnimating(true);
     setSelectedPrize(null);
+    setLitPegs([]);
 
     // Pre-select the winning prize bin.
     const targetPrizeIndex = pool![currentSpinIndex];
@@ -181,6 +201,9 @@ const PlinkoBoard: React.FC = () => {
       top: currentY - ballRadius,
       scale: 1,
     });
+
+    // Create the audio instance
+    const audio = new Audio(collideSound);
 
     // Process each peg row.
     for (let i = 0; i < pegRows.length; i++) {
@@ -202,6 +225,11 @@ const PlinkoBoard: React.FC = () => {
       }
       const chosenPeg = pegRow[chosenIndex];
 
+      // Light up the peg
+      const newLitPegs = [...litPegs];
+      newLitPegs[i][chosenIndex] = true;
+      setLitPegs(newLitPegs);
+
       // Vertical drop: move to a safe position above the peg.
       const safeY = chosenPeg.y - collisionOffset;
       await controls.start({
@@ -209,6 +237,9 @@ const PlinkoBoard: React.FC = () => {
         left: currentX - ballRadius,
         transition: realisticVerticalTransition,
       });
+
+      // Play the sound when the ball hits the peg
+      audio.play();
 
       // A brief delay (reduced for speed).
       await sleep(30);
@@ -256,20 +287,69 @@ const PlinkoBoard: React.FC = () => {
     });
 
     // Announce the winning prize.
+    const winSound = new Audio(collideSound);
+    winSound.play();
     setSelectedPrize(targetPrizeIndex);
     setAnimating(false);
+    onWinModalOpen();
   };
 
+  const [litPegs, setLitPegs] = useState<boolean[][]>([]);
+
+  // Initialize litPegs with all false values on component mount
+  useEffect(() => {
+    const initialLitPegs = pegRows.map(() => []);
+    setLitPegs(initialLitPegs);
+  }, [pegRows]);
+  const {
+    isOpen: isWinModalOpen,
+    onOpen: onWinModalOpen,
+    onClose: onWinModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isTestsModalOpen,
+    onOpen: onTestsModalOpen,
+    onClose: onTestsModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isStatsModalOpen,
+    onOpen: onStatsModalOpen,
+    onClose: onStatsModalClose,
+  } = useDisclosure();
+  const [toolBarVisible, setToolBarVisible] = useState(false);
+  const [showGameOver, setShowGameOver] = useState(false);
+
+  useEffect(() => {
+    if (currentSpinIndex >= 153) {
+      const timer = setTimeout(() => {
+        setShowGameOver(true);
+      }, 7000); // 5 seconds delay
+
+      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }
+  }, [currentSpinIndex]);
+  if (currentSpinIndex === 153 && showGameOver) {
+    return <GameOver />;
+  }
   return (
-    <Flex direction="column" align="center" mt={5}>
+    <Center
+      display={"flex"}
+      flexDir="column"
+      alignItems="center"
+      height={"100vw"}
+      overflow={"hidden"}
+      background={`url(${plinkoBg})`}
+      backgroundSize={"cover"}
+      backgroundRepeat={"no-repeat"}
+    >
       {/* Board Container */}
       <Box
         position="relative"
         width={`${BOARD_WIDTH}px`}
         height={`${BOARD_HEIGHT}px`}
-        border="2px solid gray"
-        borderRadius="md"
         overflow="hidden"
+        mt={"10vw"}
       >
         {/* Render static pegs */}
         {pegRows.map((pegRow, rowIndex) =>
@@ -280,7 +360,12 @@ const PlinkoBoard: React.FC = () => {
               width={`${pegRadius * 2}px`}
               height={`${pegRadius * 2}px`}
               borderRadius="full"
-              bg="blue.400"
+              bg={"white"} // Change to a light color when lit
+              boxShadow={
+                litPegs[rowIndex]?.[pegIndex]
+                  ? "inset -0.5px 8.5px 10.5px -8.5px #f8c009"
+                  : "-3.5px 21px 32px -6px #000000"
+              }
               top={`${peg.y - pegRadius}px`}
               left={`${peg.x - pegRadius}px`}
             />
@@ -293,30 +378,34 @@ const PlinkoBoard: React.FC = () => {
           width={`${ballRadius * 2}px`}
           height={`${ballRadius * 2}px`}
           borderRadius="full"
-          bg="red.400"
+          background={"#FFC121"}
           animate={controls}
           initial={{
             left: BOARD_WIDTH / 2 - ballRadius,
             top: ballRadius - ballRadius,
             scale: 1,
           }}
-          style={{ position: "absolute" }}
-        />
+          style={{
+            background: `url${ballIcon}`,
+          }}
+        >
+          <Center>
+            {/* <Image width={"60%"} height={"60%"} src={}></Image> */}
+          </Center>
+        </MotionBox>
       </Box>
 
       {/* Button to trigger the ball drop */}
-      <Button mt={4} onClick={dropBall} isDisabled={animating}>
-        {animating ? "Ball in Motion..." : "Drop Ball"}
-      </Button>
 
       {/* Prize Bins */}
       <Box
         mt={4}
+        px={4}
         width={`${BOARD_WIDTH}px`}
         display="flex"
         justifyContent="space-around"
       >
-        {SEGMENTS.map((segment, index) => (
+        {PlinkoSegments.map((segment, index) => (
           <Image
             src={segment.image}
             key={index}
@@ -330,17 +419,122 @@ const PlinkoBoard: React.FC = () => {
           ></Image>
         ))}
       </Box>
+      <Button
+        mt={4}
+        onClick={dropBall}
+        isDisabled={animating || currentSpinIndex >= 153}
+      >
+        {animating ? "Ball in Motion..." : "Drop Ball"}
+      </Button>
 
       {/* Prize Announcement */}
       {selectedPrize !== null && (
         <Box mt={2}>
           <Text fontSize="xl">
-            You won: {SEGMENTS[selectedPrize].stockName}
+            You won: {PlinkoSegments[selectedPrize].stockName}
           </Text>
         </Box>
       )}
-    </Flex>
+      <Box
+        position={"absolute"}
+        left={"2vw"}
+        top={"1.5vw"}
+        display={"flex"}
+        flexDir={"row"}
+        color={"white"}
+        alignItems={"center"}
+      >
+        <Image width={"4vw"} src={countIcon} mr={"1vw"} />
+
+        <Text
+          as={"span"}
+          fontSize={"2vw"}
+          color={currentSpinIndex === 153 ? "red" : "white"}
+        >
+          {currentSpinIndex}/153
+        </Text>
+      </Box>
+      <Image
+        position={"absolute"}
+        top={"18vw"}
+        width={"20vw"}
+        mb={"1vw"}
+        src={awaedWritten}
+      />
+      <Box
+        position={"absolute"}
+        top={"0"}
+        right={"0"}
+        cursor={"pointer"}
+        height={"25vw"}
+        width={"62vw"}
+        display={"flex"}
+        zIndex={"200"}
+        dir="rtl"
+        onMouseEnter={() => setToolBarVisible(true)}
+        onMouseLeave={() => setToolBarVisible(false)}
+      >
+        {toolBarVisible && (
+          <>
+            {" "}
+            <Image
+              // position={"absolute"}
+              // top={"0vw"}
+              // right={"25vw"}
+              cursor={"pointer"}
+              onClick={onStatsModalOpen}
+              src={statisticsButton}
+              width={"20vw"}
+              height={"20vw"}
+            />
+            <Image
+              // position={"absolute"}
+              // top={"0vw"}
+              // right={"48vw"}
+              cursor={"pointer"}
+              onClick={onTestsModalOpen}
+              src={testIcon}
+              width={"20vw"}
+              height={"20vw"}
+            />
+          </>
+        )}
+      </Box>
+      {selectedPrize !== null && (
+        <WinModal
+          isOpen={isWinModalOpen}
+          onClose={onWinModalClose}
+          currentPrice={PlinkoSegments[selectedPrize].currentPrice}
+          stockName={PlinkoSegments[selectedPrize].stockName}
+        />
+      )}
+
+      <TestsModal
+        isOpen={isTestsModalOpen}
+        onClose={onTestsModalClose}
+        segments={PlinkoSegments}
+      />
+      <StatsModal
+        isOpen={isStatsModalOpen}
+        onClose={onStatsModalClose}
+        pool={pool}
+        currentSpinIndex={currentSpinIndex}
+        segments={PlinkoSegments}
+      />
+      <Box
+        bg={"rgba(0,0,0,0.6)"}
+        width={"100vw"}
+        position={"absolute"}
+        bottom={"0"}
+        left={"0"}
+        py={"2vw"}
+        pl={"3vw"}
+        zIndex={50}
+      >
+        <Image width={"20vw"} src={arzLogo} />
+      </Box>
+    </Center>
   );
 };
 
-export default PlinkoBoard;
+export default PlinkoBalls;
