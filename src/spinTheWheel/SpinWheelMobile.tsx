@@ -84,7 +84,7 @@ const SEGMENTS = [
   },
 ];
 
-const SpinWheel = () => {
+const SpinWheelMobile = () => {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winningIdx, setWinningIdx] = useState<number | null>(null);
@@ -552,4 +552,4 @@ const SpinWheel = () => {
   );
 };
 
-export default SpinWheel;
+export default SpinWheelMobile;
