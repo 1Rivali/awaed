@@ -18,6 +18,7 @@ import plinkoBg from "../assets/bgs/plinko-bg.svg";
 import { PlinkoSegments } from "../constants/constants";
 
 import arzLogo from "../assets/basics/powered-by-arz.svg";
+import dropBallIcon from "../assets/basics/drop-ball.svg";
 import GameOver from "../components/GameOver";
 import StatsModal from "../components/modals/StatsModal";
 import TestsModal from "../components/modals/TestsModal";
@@ -99,7 +100,7 @@ const PlinkoBalls: React.FC = () => {
   const [animating, setAnimating] = useState(false);
   const [selectedPrize, setSelectedPrize] = useState<number | null>(null);
   const controls = useAnimation();
-  const [currentSpinIndex, setCurrentSpinIndex] = useState(0);
+  const [currentDropIndex, setCurrentDropIndex] = useState(0);
   const [pool, setPool] = useState<number[]>([]);
   // Generate the board once on mount.
   useEffect(() => {
@@ -136,7 +137,7 @@ const PlinkoBalls: React.FC = () => {
 
       if (timeDiff < twentyHoursInMs) {
         // Load saved data if 20 hours have not passed
-        setCurrentSpinIndex(savedSpinIndex);
+        setCurrentDropIndex(savedSpinIndex);
         setPool(savedPool); // Restore the saved pool
       } else {
         // Clear localStorage if 20 hours have passed
@@ -166,13 +167,13 @@ const PlinkoBalls: React.FC = () => {
   useEffect(() => {
     if (pool.length > 0) {
       const dataToSave = {
-        currentSpinIndex: 152,
+        currentSpinIndex: currentDropIndex,
         pool,
         timestamp: new Date().getTime(),
       };
       localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
     }
-  }, [currentSpinIndex, pool]);
+  }, [currentDropIndex, pool]);
   /**
    * Drop the ball through the board with a more realistic, faster falling motion:
    * - Vertical drops use a tween with "easeIn" (simulating acceleration).
@@ -185,8 +186,8 @@ const PlinkoBalls: React.FC = () => {
     setLitPegs([]);
 
     // Pre-select the winning prize bin.
-    const targetPrizeIndex = pool![currentSpinIndex];
-    setCurrentSpinIndex(currentSpinIndex + 1);
+    const targetPrizeIndex = pool![currentDropIndex];
+    setCurrentDropIndex(currentDropIndex + 1);
     console.log(targetPrizeIndex);
     const numBins = BOARD_ROWS + 1;
     const binWidth = BOARD_WIDTH / numBins;
@@ -321,15 +322,15 @@ const PlinkoBalls: React.FC = () => {
   const [showGameOver, setShowGameOver] = useState(false);
 
   useEffect(() => {
-    if (currentSpinIndex >= 153) {
+    if (currentDropIndex >= 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
       }, 7000); // 5 seconds delay
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
-  }, [currentSpinIndex]);
-  if (currentSpinIndex === 153 && showGameOver) {
+  }, [currentDropIndex]);
+  if (currentDropIndex === 153 && showGameOver) {
     return <GameOver />;
   }
   return (
@@ -420,12 +421,19 @@ const PlinkoBalls: React.FC = () => {
         ))}
       </Box>
       <Button
+        tabIndex={0}
         mt={4}
         onClick={dropBall}
-        isDisabled={animating || currentSpinIndex >= 153}
-      >
-        {animating ? "Ball in Motion..." : "Drop Ball"}
-      </Button>
+        isDisabled={animating || currentDropIndex >= 153}
+        bg={`url(${dropBallIcon})`}
+        width={"10vw"}
+        height={"10vw"}
+        bgSize={"contain"}
+        bgRepeat={"no-repeat"}
+        bgPos={"center"}
+        _hover={{}}
+        _active={{}}
+      ></Button>
 
       {/* Prize Announcement */}
       {selectedPrize !== null && (
@@ -449,9 +457,9 @@ const PlinkoBalls: React.FC = () => {
         <Text
           as={"span"}
           fontSize={"2vw"}
-          color={currentSpinIndex === 153 ? "red" : "white"}
+          color={currentDropIndex === 153 ? "red" : "white"}
         >
-          {currentSpinIndex}/153
+          {currentDropIndex}/153
         </Text>
       </Box>
       <Image
@@ -484,8 +492,8 @@ const PlinkoBalls: React.FC = () => {
               cursor={"pointer"}
               onClick={onStatsModalOpen}
               src={statisticsButton}
-              width={"20vw"}
-              height={"20vw"}
+              width={"5vw"}
+              height={"5vw"}
             />
             <Image
               // position={"absolute"}
@@ -494,8 +502,8 @@ const PlinkoBalls: React.FC = () => {
               cursor={"pointer"}
               onClick={onTestsModalOpen}
               src={testIcon}
-              width={"20vw"}
-              height={"20vw"}
+              width={"5vw"}
+              height={"5vw"}
             />
           </>
         )}
@@ -518,7 +526,7 @@ const PlinkoBalls: React.FC = () => {
         isOpen={isStatsModalOpen}
         onClose={onStatsModalClose}
         pool={pool}
-        currentSpinIndex={currentSpinIndex}
+        currentSpinIndex={currentDropIndex}
         segments={PlinkoSegments}
       />
       <Box
