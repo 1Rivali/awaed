@@ -52,7 +52,7 @@ const SpinWheelMobile = () => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem("spinWheelData");
+    const savedData = localStorage.getItem("plinkoData");
     console.log("savedData:", savedData);
     if (savedData) {
       const {
@@ -70,7 +70,7 @@ const SpinWheelMobile = () => {
         setPool(savedPool); // Restore the saved pool
       } else {
         // Clear localStorage if 20 hours have passed
-        localStorage.removeItem("spinWheelData");
+        localStorage.removeItem("plinkoData");
         initializePool(); // Create a new pool
       }
     } else {
@@ -89,7 +89,7 @@ const SpinWheelMobile = () => {
       pool: newPool,
       timestamp: new Date().getTime(),
     };
-    localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
+    localStorage.setItem("plinkoData", JSON.stringify(dataToSave));
   };
 
   // Save data to localStorage whenever currentSpinIndex or pool changes
@@ -100,7 +100,7 @@ const SpinWheelMobile = () => {
         pool,
         timestamp: new Date().getTime(),
       };
-      localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
+      localStorage.setItem("plinkoData", JSON.stringify(dataToSave));
     }
   }, [currentSpinIndex, pool]);
 
