@@ -29,9 +29,8 @@ interface Position {
 }
 
 // Board dimensions and peg rows.
-const BOARD_WIDTH = window.innerWidth - 800;
-const BOARD_HEIGHT = window.innerHeight - 100;
-// With 9 rows, there will be 9 + 1 = 10 bins.
+const BOARD_WIDTH = window.innerWidth * 0.7; // Adjust based on the screen size
+const BOARD_HEIGHT = window.innerHeight * 0.5; // Adjust based on the screen size
 const BOARD_ROWS = 9;
 
 // Dimensions for the ball and peg.
@@ -100,7 +99,7 @@ const PlinkoBalls: React.FC = () => {
   const [animating, setAnimating] = useState(false);
   const [selectedPrize, setSelectedPrize] = useState<number | null>(null);
   const controls = useAnimation();
-  const [currentDropIndex, setCurrentDropIndex] = useState(0);
+  const [currentSpinIndex, setCurrentSpinIndex] = useState(0);
   const [pool, setPool] = useState<number[]>([]);
   // Generate the board once on mount.
   useEffect(() => {
@@ -137,7 +136,7 @@ const PlinkoBalls: React.FC = () => {
 
       if (timeDiff < twentyHoursInMs) {
         // Load saved data if 20 hours have not passed
-        setCurrentDropIndex(savedSpinIndex);
+        setCurrentSpinIndex(savedSpinIndex);
         setPool(savedPool); // Restore the saved pool
       } else {
         // Clear localStorage if 20 hours have passed
@@ -167,13 +166,13 @@ const PlinkoBalls: React.FC = () => {
   useEffect(() => {
     if (pool.length > 0) {
       const dataToSave = {
-        currentSpinIndex: currentDropIndex,
+        currentSpinIndex,
         pool,
         timestamp: new Date().getTime(),
       };
       localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
     }
-  }, [currentDropIndex, pool]);
+  }, [currentSpinIndex, pool]);
   /**
    * Drop the ball through the board with a more realistic, faster falling motion:
    * - Vertical drops use a tween with "easeIn" (simulating acceleration).
@@ -186,8 +185,8 @@ const PlinkoBalls: React.FC = () => {
     setLitPegs([]);
 
     // Pre-select the winning prize bin.
-    const targetPrizeIndex = pool![currentDropIndex];
-    setCurrentDropIndex(currentDropIndex + 1);
+    const targetPrizeIndex = pool![currentSpinIndex];
+    setCurrentSpinIndex(currentSpinIndex + 1);
     console.log(targetPrizeIndex);
     const numBins = BOARD_ROWS + 1;
     const binWidth = BOARD_WIDTH / numBins;
@@ -322,15 +321,15 @@ const PlinkoBalls: React.FC = () => {
   const [showGameOver, setShowGameOver] = useState(false);
 
   useEffect(() => {
-    if (currentDropIndex >= 153) {
+    if (currentSpinIndex >= 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
       }, 7000); // 5 seconds delay
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
-  }, [currentDropIndex]);
-  if (currentDropIndex === 153 && showGameOver) {
+  }, [currentSpinIndex]);
+  if (currentSpinIndex === 153 && showGameOver) {
     return <GameOver />;
   }
   return (
@@ -338,7 +337,7 @@ const PlinkoBalls: React.FC = () => {
       display={"flex"}
       flexDir="column"
       alignItems="center"
-      height={"100vw"}
+      height={"100vh"} // Full viewport height
       overflow={"hidden"}
       background={`url(${plinkoBg})`}
       backgroundSize={"cover"}
@@ -347,10 +346,10 @@ const PlinkoBalls: React.FC = () => {
       {/* Board Container */}
       <Box
         position="relative"
-        width={`${BOARD_WIDTH}px`}
-        height={`${BOARD_HEIGHT}px`}
+        width={`${BOARD_WIDTH}px`} // Dynamic width based on screen
+        height={`${BOARD_HEIGHT}px`} // Dynamic height based on screen
         overflow="hidden"
-        mt={"10vw"}
+        mt={"5vh"} // Adjust the top margin based on screen height
       >
         {/* Render static pegs */}
         {pegRows.map((pegRow, rowIndex) =>
@@ -358,10 +357,10 @@ const PlinkoBalls: React.FC = () => {
             <Box
               key={`${rowIndex}-${pegIndex}`}
               position="absolute"
-              width={`${pegRadius * 2}px`}
-              height={`${pegRadius * 2}px`}
+              width={`${pegRadius * 2}px`} // Scale pegs proportionally
+              height={`${pegRadius * 2}px`} // Scale pegs proportionally
               borderRadius="full"
-              bg={"white"} // Change to a light color when lit
+              bg={"white"}
               boxShadow={
                 litPegs[rowIndex]?.[pegIndex]
                   ? "inset -0.5px 8.5px 10.5px -8.5px #f8c009"
@@ -387,7 +386,8 @@ const PlinkoBalls: React.FC = () => {
             scale: 1,
           }}
           style={{
-            background: `url${ballIcon}`,
+            background: `url(${ballIcon})`,
+            backgroundSize: "contain",
           }}
         >
           <Center>
@@ -402,7 +402,7 @@ const PlinkoBalls: React.FC = () => {
       <Box
         mt={4}
         px={4}
-        width={`${BOARD_WIDTH}px`}
+        width={`${BOARD_WIDTH}px`} // Responsive to screen size
         display="flex"
         justifyContent="space-around"
       >
@@ -417,17 +417,19 @@ const PlinkoBalls: React.FC = () => {
             flex="1"
             m={1}
             bg={selectedPrize === index ? "green.300" : "white"}
+            width={"10vw"} // Scale images proportionally
           ></Image>
         ))}
       </Box>
+
       <Button
         tabIndex={0}
         mt={4}
         onClick={dropBall}
-        isDisabled={animating || currentDropIndex >= 153}
+        isDisabled={animating || currentSpinIndex >= 153}
         bg={`url(${dropBallIcon})`}
-        width={"10vw"}
-        height={"10vw"}
+        width={"10vw"} // Responsive button size
+        height={"10vw"} // Responsive button size
         bgSize={"contain"}
         bgRepeat={"no-repeat"}
         bgPos={"center"}
@@ -443,9 +445,11 @@ const PlinkoBalls: React.FC = () => {
           </Text>
         </Box>
       )}
+
+      {/* Responsive Toolbar and Stats */}
       <Box
         position={"absolute"}
-        left={"2vw"}
+        left={"2vw"} // Use vw for positioning
         top={"1.5vw"}
         display={"flex"}
         flexDir={"row"}
@@ -456,19 +460,21 @@ const PlinkoBalls: React.FC = () => {
 
         <Text
           as={"span"}
-          fontSize={"2vw"}
-          color={currentDropIndex === 153 ? "red" : "white"}
+          fontSize={"2vw"} // Dynamic font size
+          color={currentSpinIndex === 153 ? "red" : "white"}
         >
-          {currentDropIndex}/153
+          {currentSpinIndex}/153
         </Text>
       </Box>
+
       <Image
         position={"absolute"}
-        top={"18vw"}
-        width={"20vw"}
+        top={"18vw"} // Adjust the position based on viewport size
+        width={"20vw"} // Scalable width
         mb={"1vw"}
         src={awaedWritten}
       />
+
       <Box
         position={"absolute"}
         top={"0"}
@@ -484,21 +490,14 @@ const PlinkoBalls: React.FC = () => {
       >
         {toolBarVisible && (
           <>
-            {" "}
             <Image
-              // position={"absolute"}
-              // top={"0vw"}
-              // right={"25vw"}
               cursor={"pointer"}
               onClick={onStatsModalOpen}
               src={statisticsButton}
-              width={"5vw"}
-              height={"5vw"}
+              width={"5vw"} // Adjust width dynamically
+              height={"5vw"} // Adjust height dynamically
             />
             <Image
-              // position={"absolute"}
-              // top={"0vw"}
-              // right={"48vw"}
               cursor={"pointer"}
               onClick={onTestsModalOpen}
               src={testIcon}
@@ -526,16 +525,16 @@ const PlinkoBalls: React.FC = () => {
         isOpen={isStatsModalOpen}
         onClose={onStatsModalClose}
         pool={pool}
-        currentSpinIndex={currentDropIndex}
+        currentSpinIndex={currentSpinIndex}
         segments={PlinkoSegments}
       />
       <Box
         bg={"rgba(0,0,0,0.6)"}
-        width={"100vw"}
+        width={"100vw"} // Full width of the viewport
         position={"absolute"}
         bottom={"0"}
         left={"0"}
-        py={"2vw"}
+        py={"2vw"} // Scale padding based on viewport size
         pl={"3vw"}
         zIndex={50}
       >
