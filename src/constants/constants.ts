@@ -90,7 +90,7 @@ export const PlinkoSegments = [
   },
   {
     image: plinkosabicLogo,
-    currentPrice: "20",
+    currentPrice: "68",
     stockName: "SABIC",
     maxWinners: 34,
   },
