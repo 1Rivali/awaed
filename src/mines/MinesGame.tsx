@@ -278,7 +278,7 @@ const Game: React.FC = () => {
         <Grid templateColumns="repeat(4, 200px)" gap={4}>
           {board.map((box) => (
             // Wrap each card in a div that sets the perspective for a 3D flip.
-            <div key={box.id} style={{ perspective: "1000px" }}>
+            <div key={box.id} style={{ perspective: "100vw" }}>
               <MotionBox
                 initial="hidden"
                 animate={
