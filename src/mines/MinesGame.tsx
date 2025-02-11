@@ -9,6 +9,7 @@ import {
   Center,
   Box,
   Text,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { PlinkoSegments } from "../constants/constants";
@@ -25,16 +26,14 @@ import StatsModal from "../components/modals/StatsModal";
 // Create a motion-enabled Box component.
 const MotionBox = motion.div;
 
-// -----------------------------------------------------------------
-// 1. Define the type for each game board box.
+// Define the type for each game board box.
 type BoxData = {
   id: number;
   value: number;
   revealed: boolean;
 };
 
-// -----------------------------------------------------------------
-// 2. Create a weighted pool function using all available Plinko segments.
+// Create a weighted pool function using all available Plinko segments.
 const createPool = (): number[] => {
   const pool: number[] = [];
   PlinkoSegments.forEach((segment, index) => {
@@ -50,8 +49,7 @@ const createPool = (): number[] => {
   return pool;
 };
 
-// -----------------------------------------------------------------
-// 3. Define variants for the card flip animation.
+// Define variants for the card flip animation.
 const cardVariants = {
   hidden: { rotateY: 0, scale: 1 },
   revealed: {
@@ -67,8 +65,7 @@ const cardVariants = {
   },
 };
 
-// -----------------------------------------------------------------
-// 4. Define the main Game component.
+// Define the main Game component.
 const Game: React.FC = () => {
   const [board, setBoard] = useState<BoxData[]>([]);
   const [winningIndex, setWinningIndex] = useState<number | null>(null);
@@ -83,7 +80,13 @@ const Game: React.FC = () => {
     onClose: closeWinModal,
   } = useDisclosure();
 
-  // -----------------------------------------------------------------
+  // Set a responsive card size using breakpoints.
+  const cardSize = useBreakpointValue({
+    base: "150px",
+    md: "200px",
+    lg: "200px",
+  });
+
   // Function to initialize the pool.
   const initializePool = () => {
     const newPool = createPool();
@@ -97,7 +100,6 @@ const Game: React.FC = () => {
     localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
   };
 
-  // -----------------------------------------------------------------
   // Load saved pool data or initialize a new pool on component mount.
   useEffect(() => {
     const savedData = localStorage.getItem("spinWheelData");
@@ -120,7 +122,6 @@ const Game: React.FC = () => {
     initializePool();
   }, []);
 
-  // -----------------------------------------------------------------
   // Save pool and currentGameIndex changes to localStorage.
   useEffect(() => {
     if (pool.length > 0) {
@@ -133,7 +134,6 @@ const Game: React.FC = () => {
     }
   }, [currentGameIndex, pool]);
 
-  // -----------------------------------------------------------------
   // When the pool is ready, generate a new game board using the next weighted winning index.
   useEffect(() => {
     if (pool.length > 0) {
@@ -148,7 +148,6 @@ const Game: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool]);
 
-  // -----------------------------------------------------------------
   // Generate a new game board.
   // The board is filled with one copy of each available PlinkoSegment (all 10),
   // plus 2 extra copies of the predetermined winning segment (total of 12 boxes).
@@ -170,7 +169,6 @@ const Game: React.FC = () => {
     return { board: boardData, winningIndex: winningIdx };
   };
 
-  // -----------------------------------------------------------------
   // Handle a box click by revealing the box.
   const handleBoxClick = (id: number) => {
     if (gameWon) return;
@@ -181,7 +179,6 @@ const Game: React.FC = () => {
     );
   };
 
-  // -----------------------------------------------------------------
   // Check if any revealed segment appears three times.
   useEffect(() => {
     const counts: Record<number, number> = {};
@@ -198,7 +195,6 @@ const Game: React.FC = () => {
     }
   }, [board]);
 
-  // -----------------------------------------------------------------
   // On win, reveal all boxes.
   useEffect(() => {
     if (gameWon) {
@@ -208,7 +204,6 @@ const Game: React.FC = () => {
     }
   }, [gameWon]);
 
-  // -----------------------------------------------------------------
   // When the game is won, open the Win Modal.
   useEffect(() => {
     if (gameWon && winningIndex !== null) {
@@ -218,7 +213,6 @@ const Game: React.FC = () => {
     }
   }, [gameWon, winningIndex, openWinModal]);
 
-  // -----------------------------------------------------------------
   // Reset the game (this function no longer closes the modal).
   const resetGame = () => {
     if (pool.length > 0) {
@@ -231,23 +225,22 @@ const Game: React.FC = () => {
     }
   };
 
-  // -----------------------------------------------------------------
   // When the Win Modal is closed, reset the game.
   const handleWinModalClose = () => {
     closeWinModal();
     setTimeout(() => resetGame(), 2000);
   };
+
   const [toolBarVisible, setToolBarVisible] = useState(false);
-  // -----------------------------------------------------------------
   // Render the game UI.
   const [showGameOver, setShowGameOver] = useState(false);
   useEffect(() => {
     if (currentGameIndex >= 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
-      }, 7000); // 5 seconds delay
+      }, 7000); // Delay before showing game over
 
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+      return () => clearTimeout(timer);
     }
   }, [currentGameIndex]);
   const {
@@ -270,15 +263,22 @@ const Game: React.FC = () => {
     >
       <Center
         bg={`url(${plinkoBg})`}
-        height={"100vw"}
-        width={"99vw"}
-        bgSize={"cover"}
-        bgPosition={"center"}
+        minH="100vh"
+        w="100vw"
+        bgSize="cover"
+        bgPosition="center"
       >
-        <Grid templateColumns="repeat(4, 200px)" gap={4}>
+        <Grid
+          templateColumns={{
+            base: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
+            lg: "repeat(4, 1fr)",
+          }}
+          gap={4}
+        >
           {board.map((box) => (
             // Wrap each card in a div that sets the perspective for a 3D flip.
-            <div key={box.id} style={{ perspective: "100vw" }}>
+            <div key={box.id} style={{ perspective: "800px" }}>
               <MotionBox
                 initial="hidden"
                 animate={
@@ -292,8 +292,8 @@ const Game: React.FC = () => {
                 }
                 variants={cardVariants}
                 style={{
-                  width: "200px",
-                  height: "200px",
+                  width: cardSize || "200px",
+                  height: cardSize || "200px",
                   position: "relative",
                   transformStyle: "preserve-3d",
                   cursor: "pointer",
@@ -334,8 +334,8 @@ const Game: React.FC = () => {
                   }}
                 >
                   <Image
-                    width={"70%"}
-                    height={"70%"}
+                    w="70%"
+                    h="70%"
                     src={PlinkoSegments[box.value].image}
                     alt={PlinkoSegments[box.value].stockName}
                   />
@@ -358,74 +358,66 @@ const Game: React.FC = () => {
         }
       />
       <Box
-        bg={"rgba(0,0,0,0.6)"}
-        width={"100vw"}
-        position={"absolute"}
-        bottom={"0"}
-        left={"0"}
-        py={"3vw"}
-        pl={"5vw"}
-        pr={"5vw"}
+        bg="rgba(0,0,0,0.6)"
+        w="100vw"
+        position="absolute"
+        bottom="0"
+        left="0"
+        py="3vw"
+        pl="5vw"
+        pr="5vw"
         zIndex={50}
       >
-        <Image width={"50vw"} src={arzLogo} />
+        <Image w="50vw" src={arzLogo} />
       </Box>
       <Center>
-        {" "}
         <Image
-          position={"absolute"}
-          top={"20vw"} // Adjust the position based on viewport size
-          width={"22vw"} // Scalable width
-          mb={"1vw"}
+          position="absolute"
+          top="20vw"
+          w="22vw"
+          mb="1vw"
           src={awaedWritten}
         />
       </Center>
       <Box
-        position={"absolute"}
-        left={"5vw"}
-        top={"6.5vw"}
-        display={"flex"}
-        flexDir={"row"}
-        color={"white"}
-        alignItems={"center"}
+        position="absolute"
+        left="5vw"
+        top="6.5vw"
+        display="flex"
+        flexDir="row"
+        color="white"
+        alignItems="center"
       >
-        <Image width={"6vw"} src={countIcon} mr={"2vw"} />
-
+        <Image w="6vw" src={countIcon} mr="2vw" />
         <Text
-          as={"span"}
-          fontSize={"3vw"}
+          as="span"
+          fontSize="3vw"
           color={currentGameIndex === 153 ? "red" : "white"}
         >
           {currentGameIndex}/153
         </Text>
       </Box>
       <Box
-        position={"absolute"}
-        top={"0"}
-        right={"0"}
-        cursor={"pointer"}
-        height={"25vw"}
-        width={"62vw"}
-        display={"flex"}
-        zIndex={"200"}
+        position="absolute"
+        top="0"
+        right="0"
+        cursor="pointer"
+        h="25vw"
+        w="62vw"
+        display="flex"
+        zIndex="200"
         dir="rtl"
         onMouseEnter={() => setToolBarVisible(true)}
         onMouseLeave={() => setToolBarVisible(false)}
       >
         {toolBarVisible && (
-          <>
-            {" "}
-            <Image
-              // position={"absolute"}
-              // top={"0vw"}
-              // right={"25vw"}
-              cursor={"pointer"}
-              onClick={onStatsModalOpen}
-              src={statisticsButton}
-              width={"20vw"}
-              height={"20vw"}
-            />
-          </>
+          <Image
+            cursor="pointer"
+            onClick={onStatsModalOpen}
+            src={statisticsButton}
+            w="20vw"
+            h="20vw"
+          />
         )}
       </Box>
       <StatsModal
