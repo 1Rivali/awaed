@@ -99,7 +99,7 @@ const PlinkoBalls: React.FC = () => {
   const [animating, setAnimating] = useState(false);
   const [selectedPrize, setSelectedPrize] = useState<number | null>(null);
   const controls = useAnimation();
-  const [currentSpinIndex, setCurrentSpinIndex] = useState(0);
+  const [crrentGameIndex, setCurrentGameIndex] = useState(0);
   const [pool, setPool] = useState<number[]>([]);
   // Generate the board once on mount.
   useEffect(() => {
@@ -136,7 +136,7 @@ const PlinkoBalls: React.FC = () => {
 
       if (timeDiff < twentyHoursInMs) {
         // Load saved data if 20 hours have not passed
-        setCurrentSpinIndex(savedSpinIndex);
+        setCurrentGameIndex(savedSpinIndex);
         setPool(savedPool); // Restore the saved pool
       } else {
         // Clear localStorage if 20 hours have passed
@@ -166,13 +166,13 @@ const PlinkoBalls: React.FC = () => {
   useEffect(() => {
     if (pool.length > 0) {
       const dataToSave = {
-        currentSpinIndex,
+        currentSpinIndex: crrentGameIndex,
         pool,
         timestamp: new Date().getTime(),
       };
       localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
     }
-  }, [currentSpinIndex, pool]);
+  }, [crrentGameIndex, pool]);
   /**
    * Drop the ball through the board with a more realistic, faster falling motion:
    * - Vertical drops use a tween with "easeIn" (simulating acceleration).
@@ -185,8 +185,8 @@ const PlinkoBalls: React.FC = () => {
     setLitPegs([]);
 
     // Pre-select the winning prize bin.
-    const targetPrizeIndex = pool![currentSpinIndex];
-    setCurrentSpinIndex(currentSpinIndex + 1);
+    const targetPrizeIndex = pool![crrentGameIndex];
+    setCurrentGameIndex(crrentGameIndex + 1);
     console.log(targetPrizeIndex);
     const numBins = BOARD_ROWS + 1;
     const binWidth = BOARD_WIDTH / numBins;
@@ -321,15 +321,15 @@ const PlinkoBalls: React.FC = () => {
   const [showGameOver, setShowGameOver] = useState(false);
 
   useEffect(() => {
-    if (currentSpinIndex >= 153) {
+    if (crrentGameIndex >= 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
       }, 7000); // 5 seconds delay
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
-  }, [currentSpinIndex]);
-  if (currentSpinIndex === 153 && showGameOver) {
+  }, [crrentGameIndex]);
+  if (crrentGameIndex === 153 && showGameOver) {
     return <GameOver />;
   }
   return (
@@ -434,7 +434,7 @@ const PlinkoBalls: React.FC = () => {
         tabIndex={0}
         mt={4}
         onClick={dropBall}
-        isDisabled={animating || currentSpinIndex >= 153}
+        isDisabled={animating || crrentGameIndex >= 153}
         bg={`url(${dropBallIcon})`}
         width={"25vw"} // Responsive button size
         height={"25vw"} // Responsive button size
@@ -469,9 +469,9 @@ const PlinkoBalls: React.FC = () => {
         <Text
           as={"span"}
           fontSize={"2vw"} // Dynamic font size
-          color={currentSpinIndex === 153 ? "red" : "white"}
+          color={crrentGameIndex === 153 ? "red" : "white"}
         >
-          {currentSpinIndex}/153
+          {crrentGameIndex}/153
         </Text>
       </Box>
 
@@ -533,7 +533,7 @@ const PlinkoBalls: React.FC = () => {
         isOpen={isStatsModalOpen}
         onClose={onStatsModalClose}
         pool={pool}
-        currentSpinIndex={currentSpinIndex}
+        currentSpinIndex={crrentGameIndex}
         segments={PlinkoSegments}
       />
       <Box
