@@ -209,7 +209,7 @@ const Game: React.FC = () => {
     if (gameWon && winningIndex !== null) {
       setTimeout(() => {
         openWinModal();
-      }, 2000);
+      }, 700);
     }
   }, [gameWon, winningIndex, openWinModal]);
 
@@ -374,7 +374,7 @@ const Game: React.FC = () => {
         <Image
           position="absolute"
           top="20vw"
-          w="22vw"
+          w="25vw"
           mb="1vw"
           src={awaedWritten}
         />
