@@ -29,7 +29,7 @@ interface Position {
 }
 
 // Board dimensions and peg rows.
-const BOARD_WIDTH = window.innerWidth * 0.7; // Adjust based on the screen size
+const BOARD_WIDTH = window.innerWidth * 0.9; // Adjust based on the screen size
 const BOARD_HEIGHT = window.innerHeight * 0.5; // Adjust based on the screen size
 const BOARD_ROWS = 9;
 
@@ -477,8 +477,8 @@ const PlinkoBalls: React.FC = () => {
 
       <Image
         position={"absolute"}
-        top={"20vw"} // Adjust the position based on viewport size
-        width={"22vw"} // Scalable width
+        top={"6vh"}
+        width={"30vw"}
         mb={"1vw"}
         src={awaedWritten}
       />

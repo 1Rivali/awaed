@@ -148,6 +148,41 @@ const Game: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool]);
 
+  function getTwoDistinctRandomIndices<T>(
+    arr: T[],
+    excludeIndex: number
+  ): [number, number] {
+    // Validate the excluded index.
+    if (excludeIndex < 0 || excludeIndex >= arr.length) {
+      throw new Error("Excluded index is out of bounds.");
+    }
+
+    // Create an array of valid indices, excluding the provided index.
+    const validIndices = arr
+      .map((_, index) => index)
+      .filter((index) => index !== excludeIndex);
+
+    // Ensure that there are at least two valid indices to choose from.
+    if (validIndices.length < 2) {
+      throw new Error(
+        "Not enough valid elements to select two distinct indices."
+      );
+    }
+
+    // Randomly pick the first valid index.
+    const firstIndex =
+      validIndices[Math.floor(Math.random() * validIndices.length)];
+
+    // Randomly pick the second valid index and ensure it's different from the first.
+    let secondIndex =
+      validIndices[Math.floor(Math.random() * validIndices.length)];
+    while (secondIndex === firstIndex) {
+      secondIndex =
+        validIndices[Math.floor(Math.random() * validIndices.length)];
+    }
+
+    return [firstIndex, secondIndex];
+  }
   // Generate a new game board.
   // The board is filled with one copy of each available PlinkoSegment (all 10),
   // plus 2 extra copies of the predetermined winning segment (total of 12 boxes).
@@ -158,6 +193,13 @@ const Game: React.FC = () => {
       { length: PlinkoSegments.length },
       (_, i) => i
     );
+    const [randIdx1, randIdx2] = getTwoDistinctRandomIndices<{
+      image: string;
+      currentPrice: string;
+      stockName: string;
+      maxWinners: number;
+    }>(PlinkoSegments, winningIdx);
+    uniqueIndexes[randIdx1] = randIdx2;
     const extraValues: number[] = [winningIdx, winningIdx];
     const allValues = [...uniqueIndexes, ...extraValues];
     allValues.sort(() => Math.random() - 0.5);
