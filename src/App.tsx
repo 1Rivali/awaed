@@ -8,6 +8,7 @@ import DesktopPlinkoBalls from "./plinko/PlinkoBallsDesktop";
 import MobilePlinkoBalls from "./plinko/PlinkoBallsMobile";
 import DesktopMinesGame from "./mines/DesktopMinesGame";
 import MobileMinesGame from "./mines/MobileMinesGame";
+import WelcomeScreen from "./welcome/WelcomeScreen";
 
 const App = () => {
   const isMobile = useBreakpointValue({ base: true, lg: false });
@@ -15,8 +16,9 @@ const App = () => {
     <Box>
       {" "}
       <Routes>
+        <Route path="/" element={<WelcomeScreen />} />
         <Route
-          path="/"
+          path="/wheel"
           element={isMobile ? <SpinTheWheelMobile /> : <DesktopSpinTheWheel />}
         />
         <Route
