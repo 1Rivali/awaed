@@ -1,89 +1,26 @@
-import {
-  Box,
-  Center,
-  Heading,
-  Image,
-  Text,
-  useDisclosure,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Center, Image, Text, useDisclosure } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import themeIcon from "../assets/basics/theme-button.svg";
-import bgGreen from "../assets/bgs/bg-green.svg";
+import spinnerAudio from "../assets/audio/spin-232536.mp3";
+import countIcon from "../assets/basics/count-icon.svg";
 import awaedWritten from "../assets/basics/logo-written.svg";
-import testIcon from "../assets/basics/tests-button.svg";
 import arzLogo from "../assets/basics/powered-by-arz.svg";
-import appleLogo from "../assets/spin-prizes/apple.svg";
-import aramcoLogo from "../assets/spin-prizes/aramco.svg";
-import googleLogo from "../assets/spin-prizes/google.svg";
-import lucidLogo from "../assets/spin-prizes/lucid.svg";
-import nvidiaLogo from "../assets/spin-prizes/nvidia.svg";
-import sabicLogo from "../assets/spin-prizes/sabic.svg";
-import snapLogo from "../assets/spin-prizes/snap.svg";
-import stcLogo from "../assets/spin-prizes/stc.svg";
+import statisticsButton from "../assets/basics/statistics-button.svg";
+import testIcon from "../assets/basics/tests-button.svg";
+import themeIcon from "../assets/basics/theme-button.svg";
+import bgGreen from "../assets/bgs/mobile-bg-green.svg";
+
 import spinnerBlack from "../assets/spinner-variants/spinner-black.png";
 import spinnerWhite from "../assets/spinner-variants/spinner-white.png";
+import GameOver from "../components/GameOver";
+import StatsModal from "../components/modals/StatsModal";
 import TestsModal from "../components/modals/TestsModal";
 import ThemeModal from "../components/modals/ThemeModal";
 import WinModal from "../components/modals/WinModal";
-import loseImage from "../assets/spin-prizes/lost-the-turn.svg";
-import countIcon from "../assets/basics/count-icon.svg";
-import LoseModal from "../components/modals/LoseModal";
-import spinnerAudio from "../assets/audio/spin-232536.mp3";
-import gameOverBg from "../assets/bgs/game-over-bg.svg";
-import gameOverComplete from "../assets/game-over/complete.svg";
-import gameOverSpinsOvr from "../assets/game-over/spins-ovr.svg";
-import gameOverBackTmw from "../assets/game-over/back-tmw.svg";
-import gameOverThanks from "../assets/game-over/thanks.svg";
-import statisticsButton from "../assets/basics/statistics-button.svg";
-import StatsModal from "../components/modals/StatsModal";
+import { SEGMENTS } from "../constants/constants";
 
-const SEGMENTS = [
-  { image: appleLogo, currentPrice: "900", stockName: "AAPL", maxWinners: 2 },
-  {
-    image: googleLogo,
-    currentPrice: "787.5",
-    stockName: "GOOG",
-    maxWinners: 2,
-  },
-  { image: nvidiaLogo, currentPrice: "450", stockName: "NVDA", maxWinners: 5 },
-  { image: sabicLogo, currentPrice: "68", stockName: "SABIC", maxWinners: 25 },
-  {
-    image: loseImage,
-    currentPrice: "0",
-    stockName: "Lost",
-    maxWinners: 70,
-  },
-  { image: stcLogo, currentPrice: "42", stockName: "STC", maxWinners: 125 },
-  {
-    image: snapLogo,
-    currentPrice: "43.0",
-    stockName: "SNAP",
-    maxWinners: 125,
-  },
-  {
-    image: aramcoLogo,
-    currentPrice: "29",
-    stockName: "ARAMCO",
-    maxWinners: 175,
-  },
-  {
-    image: lucidLogo,
-    currentPrice: "10.875",
-    stockName: "LCID",
-    maxWinners: 100,
-  },
-  {
-    image: loseImage,
-    currentPrice: "0",
-    stockName: "Lost",
-    maxWinners: 69,
-  },
-];
-
-const SpinWheel = () => {
+const SpinTheWheel = () => {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winningIdx, setWinningIdx] = useState<number | null>(null);
@@ -115,7 +52,7 @@ const SpinWheel = () => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem("spinWheelData");
+    const savedData = localStorage.getItem("plinkoData");
     console.log("savedData:", savedData);
     if (savedData) {
       const {
@@ -133,7 +70,7 @@ const SpinWheel = () => {
         setPool(savedPool); // Restore the saved pool
       } else {
         // Clear localStorage if 20 hours have passed
-        localStorage.removeItem("spinWheelData");
+        localStorage.removeItem("plinkoData");
         initializePool(); // Create a new pool
       }
     } else {
@@ -152,7 +89,7 @@ const SpinWheel = () => {
       pool: newPool,
       timestamp: new Date().getTime(),
     };
-    localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
+    localStorage.setItem("plinkoData", JSON.stringify(dataToSave));
   };
 
   // Save data to localStorage whenever currentSpinIndex or pool changes
@@ -163,7 +100,7 @@ const SpinWheel = () => {
         pool,
         timestamp: new Date().getTime(),
       };
-      localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
+      localStorage.setItem("plinkoData", JSON.stringify(dataToSave));
     }
   }, [currentSpinIndex, pool]);
 
@@ -191,11 +128,8 @@ const SpinWheel = () => {
     setTimeout(() => {
       setIsSpinning(false);
       setWinningIdx(selectedIndex);
-      if (selectedIndex != 4 && selectedIndex != 9) {
-        onWinModalOpen();
-      } else {
-        onLoseModalOpen();
-      }
+      onWinModalOpen();
+
       spinAudio.load();
     }, 3700);
   };
@@ -205,11 +139,7 @@ const SpinWheel = () => {
     onOpen: onWinModalOpen,
     onClose: onWinModalClose,
   } = useDisclosure();
-  const {
-    isOpen: isLoseModalOpen,
-    onOpen: onLoseModalOpen,
-    onClose: onLoseModalClose,
-  } = useDisclosure();
+
   const {
     isOpen: isOpenTheme,
     onOpen: onOpenTheme,
@@ -231,76 +161,13 @@ const SpinWheel = () => {
     if (currentSpinIndex === 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
-      }, 5000); // 5 seconds delay
+      }, 7000); // 5 seconds delay
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
   }, [currentSpinIndex]);
   if (currentSpinIndex === 153 && showGameOver) {
-    return (
-      <motion.div
-        initial={{
-          opacity: 0.5,
-          y: 0,
-          background: `url(${bg})`,
-          backgroundSize: "cover",
-        }} // Initial state (hidden)
-        animate={{
-          opacity: 1,
-          y: 0,
-          background: `url(${gameOverBg})`,
-          backgroundSize: "cover",
-        }} // Animate to visible
-        transition={{ duration: 1, ease: "easeIn" }}
-      >
-        <Box
-          w={"100vw"}
-          height={"100vh"}
-          bgSize={"cover"}
-          position={"relative"}
-        >
-          <Center>
-            <VStack height={"90vh"} justifyContent={"space-around"}>
-              <Image mt={"8vh"} src={gameOverComplete} height={"25vh"} />
-              <Image src={gameOverSpinsOvr} height={"16vh"}></Image>
-              <Heading color={"white"} fontSize={"8vh"}>
-                Total Spins:{" "}
-                <Text as={"span"} color={"#FFB800"}>
-                  153
-                </Text>
-              </Heading>
-              <Image src={gameOverBackTmw} height={"8vh"}></Image>
-              <Image src={gameOverThanks} height={"8vh"}></Image>
-              <Text
-                as={"span"}
-                zIndex={"200"}
-                color={"red"}
-                cursor={"pointer"}
-                onClick={() => {
-                  localStorage.clear();
-                  window.location.reload();
-                }}
-              >
-                Reset
-              </Text>
-            </VStack>
-          </Center>
-          <Box
-            width={"100vw"}
-            position={"absolute"}
-            bottom={"0"}
-            left={"0"}
-            py={"3vh"}
-            pl={"5vh"}
-            pr={"5vh"}
-            zIndex={50}
-          >
-            <Image width={"30vh"} mb={"1vh"} src={awaedWritten} />
-            <Image width={"50vh"} src={arzLogo} />
-          </Box>
-        </Box>
-      </motion.div>
-    );
+    return <GameOver />;
   }
 
   return (
@@ -314,11 +181,11 @@ const SpinWheel = () => {
       <Box position="relative" zIndex={"100"} overflow={"hidden"}>
         <motion.div
           style={{
-            width: "90vh",
-            height: "90vh",
+            width: "90vw",
+            height: "90vw",
             borderRadius: "50%",
             background: wheel,
-            border: `4vh solid ${wheel === "black" ? "#EDFDE1" : "#206967"}`,
+            border: `4vw solid ${wheel === "black" ? "#EDFDE1" : "#206967"}`,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -333,7 +200,7 @@ const SpinWheel = () => {
               key={`line-${i}`}
               position="absolute"
               w="100%"
-              h="2vh"
+              h="2vw"
               bg={wheel === "black" ? "#EDFDE1" : "#206967"}
               transform={`rotate(${(360 / SEGMENTS.length) * i}deg)`}
             />
@@ -347,25 +214,27 @@ const SpinWheel = () => {
                 key={`outer-text-${i}`}
                 position="absolute"
                 w="100%"
-                h="2vh"
+                h="2vw"
                 transform={`rotate(${angle}deg) `}
                 transformOrigin="bottom center"
               >
                 <Image
                   src={seg.image}
                   filter={wheel === "black" ? "invert(0)" : "invert(1)"}
-                  w={i === 4 || i === 9 ? "22vh" : "18vh"}
-                  h={i === 4 || i === 9 ? "22vh" : "18vh"}
+                  w={i === 4 || i === 9 ? "24vw" : "18vw"}
+                  h={i === 4 || i === 9 ? "24vw" : "18vw"}
                   transform={
-                    i === 1 || i === 4
-                      ? "rotate(180deg) translate(-5vh, 8vh)"
+                    i === 1
+                      ? "rotate(180deg) translate(-5vw, 8vw)"
+                      : i === 4
+                      ? "rotate(180deg) translate(-3vw, 11vw)"
                       : i === 9
-                      ? "rotate(180deg) translate(-5vh, 10vh)"
+                      ? "rotate(180deg) translate(-5vw, 10vw)"
                       : i === 8
-                      ? "rotate(180deg) translate(-7vh, 8vh)"
+                      ? "rotate(180deg) translate(-7vw, 8vw)"
                       : i === 0
-                      ? "rotate(180deg) translate(-6vh, 8vh)"
-                      : "rotate(180deg) translate(-6vh, 6.5vh)"
+                      ? "rotate(180deg) translate(-6vw, 8vw)"
+                      : "rotate(180deg) translate(-6vw, 6.5vw)"
                   }
                   objectFit="contain"
                   borderRadius="full"
@@ -392,7 +261,7 @@ const SpinWheel = () => {
             content: '""',
             position: "absolute",
             inset: 0,
-            border: "1.4vh solid transparent",
+            border: "1.4vw solid transparent",
             borderRadius: "inherit",
             transition: "border-color 0.5s ease-in-out",
           }}
@@ -400,8 +269,8 @@ const SpinWheel = () => {
             _before: { borderColor: !isSpinning && "#1ED760" },
           }}
           bgSize={"cover"}
-          w="20vh"
-          h="20vh"
+          w="20vw"
+          h="20vw"
           borderRadius="50%"
           display="flex"
           alignItems="center"
@@ -418,12 +287,12 @@ const SpinWheel = () => {
             }
           }}
         >
-          {/* <Image src={logo} w={"10vh"} height={"10vh"} /> */}
+          {/* <Image src={logo} w={"10vw"} height={"10vw"} /> */}
         </Box>
 
         <Box
-          width={"10vh"}
-          height={"10vh"}
+          width={"10vw"}
+          height={"10vw"}
           position={"absolute"}
           top={"43%"}
           right={"0%"}
@@ -440,9 +309,7 @@ const SpinWheel = () => {
           stockName={SEGMENTS[winningIdx].stockName}
         />
       )}
-      {winningIdx !== null && (
-        <LoseModal isOpen={isLoseModalOpen} onClose={onLoseModalClose} />
-      )}
+
       <ThemeModal
         isOpen={isOpenTheme}
         onClose={onCloseTheme}
@@ -471,8 +338,8 @@ const SpinWheel = () => {
         top={"0"}
         right={"0"}
         cursor={"pointer"}
-        height={"25vh"}
-        width={"62vh"}
+        height={"25vw"}
+        width={"62vw"}
         display={"flex"}
         zIndex={"200"}
         dir="rtl"
@@ -483,35 +350,35 @@ const SpinWheel = () => {
           <>
             {" "}
             <Image
-              mr={"3vh"}
+              mr={"3vw"}
               // position={"absolute"}
-              // top={"0vh"}
-              // right={"2vh"}
+              // top={"0vw"}
+              // right={"2vw"}
               cursor={"pointer"}
               onClick={onOpenTheme}
               src={themeIcon}
-              width={"20vh"}
-              height={"20vh"}
+              width={"20vw"}
+              height={"20vw"}
             />
             <Image
               // position={"absolute"}
-              // top={"0vh"}
-              // right={"25vh"}
+              // top={"0vw"}
+              // right={"25vw"}
               cursor={"pointer"}
               onClick={onStatsModalOpen}
               src={statisticsButton}
-              width={"20vh"}
-              height={"20vh"}
+              width={"20vw"}
+              height={"20vw"}
             />
             <Image
               // position={"absolute"}
-              // top={"0vh"}
-              // right={"48vh"}
+              // top={"0vw"}
+              // right={"48vw"}
               cursor={"pointer"}
               onClick={onTestsModalOpen}
               src={testIcon}
-              width={"20vh"}
-              height={"20vh"}
+              width={"20vw"}
+              height={"20vw"}
             />
           </>
         )}
@@ -523,29 +390,36 @@ const SpinWheel = () => {
         position={"absolute"}
         bottom={"0"}
         left={"0"}
-        py={"3vh"}
-        pl={"5vh"}
-        pr={"5vh"}
+        py={"3vw"}
+        pl={"5vw"}
+        pr={"5vw"}
         zIndex={50}
       >
-        <Image width={"30vh"} mb={"1vh"} src={awaedWritten} />
-        <Image width={"50vh"} src={arzLogo} />
+        <Image width={"50vw"} src={arzLogo} />
       </Box>
+      <Image
+        position={"absolute"}
+        top={"14vh"}
+        left={"14vh"}
+        width={"50vw"}
+        mb={"1vw"}
+        src={awaedWritten}
+      />
       {/* COUNT ICON */}
       <Box
         position={"absolute"}
-        left={"5vh"}
-        top={"6.5vh"}
+        left={"5vw"}
+        top={"6.5vw"}
         display={"flex"}
         flexDir={"row"}
         color={"white"}
         alignItems={"center"}
       >
-        <Image width={"6vh"} src={countIcon} mr={"2vh"} />
+        <Image width={"6vw"} src={countIcon} mr={"2vw"} />
 
         <Text
           as={"span"}
-          fontSize={"3vh"}
+          fontSize={"3vw"}
           color={currentSpinIndex === 153 ? "red" : "white"}
         >
           {currentSpinIndex}/153
@@ -555,4 +429,4 @@ const SpinWheel = () => {
   );
 };
 
-export default SpinWheel;
+export default SpinTheWheel;

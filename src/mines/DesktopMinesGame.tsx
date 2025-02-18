@@ -1,4 +1,4 @@
-// Game.tsx
+// DesktopMinesGame.tsx
 import React, { useState, useEffect } from "react";
 import {
   ChakraProvider,
@@ -9,7 +9,6 @@ import {
   Center,
   Box,
   Text,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { PlinkoSegments } from "../constants/constants";
@@ -23,7 +22,7 @@ import countIcon from "../assets/basics/count-icon.svg";
 import statisticsButton from "../assets/basics/statistics-button.svg";
 import StatsModal from "../components/modals/StatsModal";
 
-// Create a motion-enabled Box component.
+// Create a motion-enabled div.
 const MotionBox = motion.div;
 
 // Define the type for each game board box.
@@ -33,7 +32,7 @@ type BoxData = {
   revealed: boolean;
 };
 
-// Create a weighted pool function using all available Plinko segments.
+// Create a weighted pool using all available Plinko segments.
 const createPool = (): number[] => {
   const pool: number[] = [];
   PlinkoSegments.forEach((segment, index) => {
@@ -49,7 +48,7 @@ const createPool = (): number[] => {
   return pool;
 };
 
-// Define variants for the card flip animation.
+// Variants for the card flip animation.
 const cardVariants = {
   hidden: { rotateY: 0, scale: 1 },
   revealed: {
@@ -65,29 +64,25 @@ const cardVariants = {
   },
 };
 
-// Define the main Game component.
-const Game: React.FC = () => {
+// The desktop version of the game.
+const DesktopMinesGame: React.FC = () => {
   const [board, setBoard] = useState<BoxData[]>([]);
   const [winningIndex, setWinningIndex] = useState<number | null>(null);
   const [gameWon, setGameWon] = useState<boolean>(false);
   const [pool, setPool] = useState<number[]>([]);
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
 
-  // Configure the Win Modal disclosure.
+  // Win Modal controls.
   const {
     isOpen: isWinModalOpen,
     onOpen: openWinModal,
     onClose: closeWinModal,
   } = useDisclosure();
 
-  // Set a responsive card size using breakpoints.
-  const cardSize = useBreakpointValue({
-    base: "150px",
-    md: "200px",
-    lg: "200px",
-  });
+  // Use a fixed card size for desktop.
+  const cardSize = "150px";
 
-  // Function to initialize the pool.
+  // Initialize the pool and save it to localStorage.
   const initializePool = () => {
     const newPool = createPool();
     setPool(newPool);
@@ -100,7 +95,7 @@ const Game: React.FC = () => {
     localStorage.setItem("spinWheelData", JSON.stringify(dataToSave));
   };
 
-  // Load saved pool data or initialize a new pool on component mount.
+  // On mount, try to load saved pool data or initialize a new pool.
   useEffect(() => {
     const savedData = localStorage.getItem("spinWheelData");
     if (savedData) {
@@ -122,7 +117,7 @@ const Game: React.FC = () => {
     initializePool();
   }, []);
 
-  // Save pool and currentGameIndex changes to localStorage.
+  // Save pool and game index changes to localStorage.
   useEffect(() => {
     if (pool.length > 0) {
       const dataToSave = {
@@ -134,7 +129,7 @@ const Game: React.FC = () => {
     }
   }, [currentGameIndex, pool]);
 
-  // When the pool is ready, generate a new game board using the next weighted winning index.
+  // When the pool is ready, generate a new game board.
   useEffect(() => {
     if (pool.length > 0) {
       const targetPrizeIndex = pool[currentGameIndex];
@@ -148,41 +143,33 @@ const Game: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool]);
 
+  // Helper function: get two distinct random indices from an array (excluding one index).
   function getTwoDistinctRandomIndices<T>(
     arr: T[],
     excludeIndex: number
   ): [number, number] {
-    // Validate the excluded index.
     if (excludeIndex < 0 || excludeIndex >= arr.length) {
       throw new Error("Excluded index is out of bounds.");
     }
-
-    // Create an array of valid indices, excluding the provided index.
     const validIndices = arr
       .map((_, index) => index)
       .filter((index) => index !== excludeIndex);
-
-    // Ensure that there are at least two valid indices to choose from.
     if (validIndices.length < 2) {
       throw new Error(
         "Not enough valid elements to select two distinct indices."
       );
     }
-
-    // Randomly pick the first valid index.
     const firstIndex =
       validIndices[Math.floor(Math.random() * validIndices.length)];
-
-    // Randomly pick the second valid index and ensure it's different from the first.
     let secondIndex =
       validIndices[Math.floor(Math.random() * validIndices.length)];
     while (secondIndex === firstIndex) {
       secondIndex =
         validIndices[Math.floor(Math.random() * validIndices.length)];
     }
-
     return [firstIndex, secondIndex];
   }
+
   // Generate a new game board.
   // The board is filled with one copy of each available PlinkoSegment (all 10),
   // plus 2 extra copies of the predetermined winning segment (total of 12 boxes).
@@ -193,12 +180,11 @@ const Game: React.FC = () => {
       { length: PlinkoSegments.length },
       (_, i) => i
     );
-    const [randIdx1, randIdx2] = getTwoDistinctRandomIndices<{
-      image: string;
-      currentPrice: string;
-      stockName: string;
-      maxWinners: number;
-    }>(PlinkoSegments, winningIdx);
+    const [randIdx1, randIdx2] = getTwoDistinctRandomIndices(
+      PlinkoSegments,
+      winningIdx
+    );
+    // Replace one of the randomly chosen indices to force a duplicate.
     uniqueIndexes[randIdx1] = randIdx2;
     const extraValues: number[] = [winningIdx, winningIdx];
     const allValues = [...uniqueIndexes, ...extraValues];
@@ -211,7 +197,7 @@ const Game: React.FC = () => {
     return { board: boardData, winningIndex: winningIdx };
   };
 
-  // Handle a box click by revealing the box.
+  // Reveal a box on click.
   const handleBoxClick = (id: number) => {
     if (gameWon) return;
     setBoard((prevBoard) =>
@@ -237,7 +223,7 @@ const Game: React.FC = () => {
     }
   }, [board]);
 
-  // On win, reveal all boxes.
+  // When the game is won, reveal all boxes.
   useEffect(() => {
     if (gameWon) {
       setBoard((prevBoard) =>
@@ -255,7 +241,7 @@ const Game: React.FC = () => {
     }
   }, [gameWon, winningIndex, openWinModal]);
 
-  // Reset the game (this function no longer closes the modal).
+  // Reset the game for the next round.
   const resetGame = () => {
     if (pool.length > 0) {
       const targetPrizeIndex = pool[currentGameIndex];
@@ -273,53 +259,50 @@ const Game: React.FC = () => {
     setTimeout(() => resetGame(), 2000);
   };
 
+  // Toolbar visibility state.
   const [toolBarVisible, setToolBarVisible] = useState(false);
-  // Render the game UI.
+
+  // Game over logic.
   const [showGameOver, setShowGameOver] = useState(false);
   useEffect(() => {
     if (currentGameIndex >= 153) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
-      }, 7000); // Delay before showing game over
-
+      }, 7000);
       return () => clearTimeout(timer);
     }
   }, [currentGameIndex]);
+
   const {
     isOpen: isStatsModalOpen,
     onOpen: onStatsModalOpen,
     onClose: onStatsModalClose,
   } = useDisclosure();
+
   if (currentGameIndex === 153 && showGameOver) {
     return <GameOver />;
   }
+
   return (
     <ChakraProvider
       theme={extendTheme({
         styles: {
-          global: {
-            body: { backgroundColor: "#f0f4f7", overflowX: "hidden" },
-          },
+          global: { body: { backgroundColor: "#f0f4f7", overflowX: "hidden" } },
         },
       })}
     >
       <Center
         bg={`url(${plinkoBg})`}
         minH="100vh"
-        w="100vw"
+        w="100%"
         bgSize="cover"
         bgPosition="center"
+        position="relative"
       >
-        <Grid
-          templateColumns={{
-            base: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(4, 1fr)",
-          }}
-          gap={4}
-        >
+        {/* Game Board */}
+        <Grid templateColumns="repeat(4, 1fr)" gap={8} p="40px">
           {board.map((box) => (
-            // Wrap each card in a div that sets the perspective for a 3D flip.
+            // Each card wrapper sets the 3D perspective.
             <div key={box.id} style={{ perspective: "800px" }}>
               <MotionBox
                 initial="hidden"
@@ -334,15 +317,15 @@ const Game: React.FC = () => {
                 }
                 variants={cardVariants}
                 style={{
-                  width: cardSize || "200px",
-                  height: cardSize || "200px",
+                  width: cardSize,
+                  height: cardSize,
                   position: "relative",
                   transformStyle: "preserve-3d",
                   cursor: "pointer",
                 }}
                 onClick={() => handleBoxClick(box.id)}
               >
-                {/* Front Face (card back) */}
+                {/* Front Face (Card Back) */}
                 <div
                   style={{
                     position: "absolute",
@@ -350,8 +333,8 @@ const Game: React.FC = () => {
                     height: "100%",
                     backfaceVisibility: "hidden",
                     borderWidth: "1px",
-                    borderRadius: "0.375rem",
-                    backgroundColor: "#000000",
+                    borderRadius: "8px",
+                    backgroundColor: "#000",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -359,7 +342,7 @@ const Game: React.FC = () => {
                 >
                   <Image src={awaedLogoGreen} alt="Card back" />
                 </div>
-                {/* Back Face (revealed image) */}
+                {/* Back Face (Revealed Image) */}
                 <div
                   style={{
                     position: "absolute",
@@ -368,7 +351,7 @@ const Game: React.FC = () => {
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)",
                     borderWidth: "1px",
-                    borderRadius: "0.375rem",
+                    borderRadius: "8px",
                     backgroundColor: "#EDFDE1",
                     display: "flex",
                     alignItems: "center",
@@ -388,7 +371,7 @@ const Game: React.FC = () => {
         </Grid>
       </Center>
 
-      {/* Win Modal: When closed, it resets the game */}
+      {/* Win Modal */}
       <WinModal
         isOpen={isWinModalOpen}
         onClose={handleWinModalClose}
@@ -399,56 +382,54 @@ const Game: React.FC = () => {
           winningIndex !== null ? PlinkoSegments[winningIndex].stockName : ""
         }
       />
+
+      {/* Bottom Branding */}
       <Box
         bg="rgba(0,0,0,0.6)"
-        w="100vw"
+        width="fit-content"
         position="absolute"
         bottom="0"
         left="0"
-        py="3vw"
-        pl="5vw"
-        pr="5vw"
+        py="20px"
+        px="20px"
         zIndex={50}
       >
-        <Image w="50vw" src={arzLogo} />
+        <Image mb={"3vh"} width="30vh" src={awaedWritten} />
+        <Image width="30vh" src={arzLogo} />
       </Box>
-      <Center>
-        <Image
-          position="absolute"
-          top="20vw"
-          w="25vw"
-          mb="1vw"
-          src={awaedWritten}
-        />
-      </Center>
+
+      {/* Count Indicator (Top-Left) */}
       <Box
         position="absolute"
-        left="5vw"
-        top="6.5vw"
+        left="50px"
+        top="65px"
         display="flex"
         flexDir="row"
         color="white"
         alignItems="center"
       >
-        <Image w="6vw" src={countIcon} mr="2vw" />
+        <Image w="60px" src={countIcon} mr="20px" />
         <Text
           as="span"
-          fontSize="3vw"
+          fontSize="30px"
           color={currentGameIndex === 153 ? "red" : "white"}
         >
           {currentGameIndex}/153
         </Text>
       </Box>
+
+      {/* Toolbar (Top-Right) */}
       <Box
         position="absolute"
-        top="0"
-        right="0"
+        top="20px"
+        right="20px"
         cursor="pointer"
-        h="25vw"
-        w="62vw"
+        h="150px"
+        w="300px"
         display="flex"
-        zIndex="200"
-        dir="rtl"
+        justifyContent="flex-end"
+        alignItems="center"
+        zIndex={200}
         onMouseEnter={() => setToolBarVisible(true)}
         onMouseLeave={() => setToolBarVisible(false)}
       >
@@ -457,11 +438,13 @@ const Game: React.FC = () => {
             cursor="pointer"
             onClick={onStatsModalOpen}
             src={statisticsButton}
-            w="20vw"
-            h="20vw"
+            w="100px"
+            h="100px"
           />
         )}
       </Box>
+
+      {/* Stats Modal */}
       <StatsModal
         isOpen={isStatsModalOpen}
         onClose={onStatsModalClose}
@@ -473,4 +456,4 @@ const Game: React.FC = () => {
   );
 };
 
-export default Game;
+export default DesktopMinesGame;
