@@ -3,7 +3,6 @@ import { Box, useBreakpointValue } from "@chakra-ui/react";
 import { Route, Routes } from "react-router";
 import SpinTheWheelMobile from "./spinTheWheel/SpinWheelMobile";
 
-import MinesGame from "./mines/MinesGameBigScreen";
 import DesktopSpinTheWheel from "./spinTheWheel/SpinWheelDesktop";
 import DesktopPlinkoBalls from "./plinko/PlinkoBallsDesktop";
 import MobilePlinkoBalls from "./plinko/PlinkoBallsMobile";
